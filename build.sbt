@@ -2,7 +2,7 @@ name := "SolitaireBattleships"
 
 version := "0.0.0"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.3"
 
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "3.1.0",
