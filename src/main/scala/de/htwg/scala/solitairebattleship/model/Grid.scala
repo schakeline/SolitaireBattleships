@@ -20,6 +20,8 @@ class Grid (val size:Int) {
 		if (theShip == null) throw new IllegalArgumentException
 		if (x < 0 || x >= size || y < 0 || y >= size) throw new IndexOutOfBoundsException
 		
+		removeShip(theShip)
+		
 		// List with cells occupied by ship
 		var fields = (x, y) :: Nil
 		
@@ -39,6 +41,21 @@ class Grid (val size:Int) {
   private def cellInGrid(cell:Tuple2[Int, Int]):Boolean = (cell._1 >= 0 && cell._1 < size && cell._2 >= 0 && cell._2 < size)
   
   private def cellsFree(fields:List[Tuple2[Int, Int]]):Boolean = fields.filterNot(f => gridArray(f._1)(f._2) == null).isEmpty
+    
+  private def removeShip(ship:Ship) = {
+    for (x <- 0 until size)
+    { 
+      for(y <- 0 until size)
+      {
+    	  if(gridArray(x)(y) == ship)
+    		  gridArray(x)(y) = null
+      }
+    }
+  }
+  
+  private def asd(id:Int) = {
+    gridArray(1)(2).id
+  }
   
   def getRowSum(row:Int) = {
     var sum = 0

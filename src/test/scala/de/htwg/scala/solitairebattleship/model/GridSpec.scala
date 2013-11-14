@@ -48,7 +48,6 @@ class GridSpec extends FlatSpec with Matchers {
     
   }
   
-  /*
   "PlaceShip" should "move the ship if it's already placed" in {
     var s = new Ship(0,2)
     val gridSize = 4
@@ -56,7 +55,10 @@ class GridSpec extends FlatSpec with Matchers {
     
     g.placeShip(s, 0, 0, Orientation.Horizontal)
     g.placeShip(s, 1, 0, Orientation.Vertical)
-  }*/
+    g.gridArray(0)(0) should be(null)
+    g.gridArray(1)(0) should be(s)
+    g.gridArray(1)(1) should be(s)
+  }
   
   "The RowSum of an Empty Grid" should "be 0" in {
     val g = new Grid(5)
