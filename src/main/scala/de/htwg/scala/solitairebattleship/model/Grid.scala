@@ -40,4 +40,22 @@ class Grid (val size:Int) {
   
   private def cellsFree(fields:List[Tuple2[Int, Int]]):Boolean = fields.filterNot(f => gridArray(f._1)(f._2) == null).isEmpty
   
+  def getRowSum(row:Int) = {
+    var sum = 0
+    for(i <- 0 until size){
+      if((gridArray(i)(row)) != null) 
+        sum = sum +1
+    }
+    sum
+  }
+  
+  def getColumnSum(column:Int) = {
+    var sum = 0
+    for(i <- 0 until size){
+      if((gridArray(column)(i)) != null) 
+        sum = sum +1
+    }
+    sum
+  }
+  
 }

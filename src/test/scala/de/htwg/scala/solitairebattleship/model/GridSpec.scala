@@ -58,4 +58,41 @@ class GridSpec extends FlatSpec with Matchers {
     g.placeShip(s, 1, 0, Orientation.Vertical)
   }*/
   
+  "The RowSum of an Empty Grid" should "be 0" in {
+    val g = new Grid(5)
+    g.getRowSum(0) should be(0)
+  }
+  
+  "The RowSum" should "be 1" in {
+    val g = new Grid(5)
+    var s = new Ship(0,2)
+    g.placeShip(s, 0,0,Orientation.Vertical) 
+    g.getRowSum(0) should be (1)
+  } 
+  
+  "The RowSum" should "be 3" in {
+    val g = new Grid(5)
+    var s = new Ship(0,3)
+    g.placeShip(s,0,0,Orientation.Horizontal)
+    g.getRowSum(0) should be(3)
+  }
+  
+  "The ColumnSum of an Empty Grid" should "be 0" in {
+    val g = new Grid(5)
+    g.getColumnSum(0) should be(0)
+  }
+  
+  "The ColumnSum" should "be 1" in {
+    val g = new Grid(5)
+    var s = new Ship(0,3)
+    g.placeShip(s,0,0,Orientation.Horizontal)
+    g.getColumnSum(0) should be(1)
+  }
+  
+  "The ColumnSum" should "be 2" in {
+    val g =  new Grid(5)
+    var s = new Ship(0,2)
+    g.placeShip(s,0,0,Orientation.Vertical)
+    g.getColumnSum(0) should be(2)
+  }
 }
