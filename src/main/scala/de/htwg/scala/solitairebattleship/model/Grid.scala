@@ -52,11 +52,7 @@ class Grid (val size:Int) {
       }
     }
   }
-  
-  private def asd(id:Int) = {
-    gridArray(1)(2).id
-  }
-  
+    
   def getRowSum(row:Int) = {
     var sum = 0
     for(i <- 0 until size){
