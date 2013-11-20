@@ -55,9 +55,10 @@ class GridSpec extends FlatSpec with Matchers {
     
     g.placeShip(s, 0, 0, Orientation.Horizontal)
     g.placeShip(s, 1, 0, Orientation.Vertical)
-    g.gridArray(0)(0) should be(null)
-    g.gridArray(1)(0) should be(s)
-    g.gridArray(1)(1) should be(s)
+    
+    g.getCell(0, 0) should be(null)
+    g.getCell(1, 0) should be(s)
+    g.getCell(1, 1) should be(s)
   }
   
   "A ship" should "have a position" in {

@@ -10,7 +10,7 @@ object Orientation extends Enumeration {
 import de.htwg.scala.solitairebattleship.model.Orientation._
 
 class Grid (val size:Int) {
-  val gridArray = Array.ofDim[Ship](size, size)
+private val gridArray = Array.ofDim[Ship](size, size)
   
   if (size < 2) throw new IllegalArgumentException
   
@@ -78,6 +78,10 @@ class Grid (val size:Int) {
         sum += 1
     }
     sum
+  }
+  
+  def getCell(x:Int, y:Int) = {
+    gridArray(x)(y)
   }
   
 }

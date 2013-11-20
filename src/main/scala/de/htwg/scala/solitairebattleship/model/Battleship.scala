@@ -1,5 +1,6 @@
 package de.htwg.scala.solitairebattleship.model
 
 class Battleship(val genGrid:Grid, val ships:List[Ship]) {
-	val userGrid = new Grid(genGrid.size)
+  val userGrid = new Grid(genGrid.size)
+  private var _genGrid:Grid = null
 }
