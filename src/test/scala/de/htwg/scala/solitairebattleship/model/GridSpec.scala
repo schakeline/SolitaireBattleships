@@ -60,6 +60,28 @@ class GridSpec extends FlatSpec with Matchers {
     g.gridArray(1)(1) should be(s)
   }
   
+  "A ship" should "have a position" in {
+    var s = new Ship(0,4)
+    var g = new Grid(8)
+    
+    g.placeShip(s, 1, 0, Orientation.Horizontal)
+    g.getPosOfShip(s) should be((1,0))
+    
+    g.placeShip(s, 1, 0, Orientation.Horizontal)
+    g.getPosOfShip(s) should be((1,0))
+  }
+  
+  "A ship" should "be removable" in {
+    var s = new Ship(0,4)
+    var g = new Grid(8)
+    
+    g.placeShip(s, 1, 0, Orientation.Horizontal)
+    g.getPosOfShip(s) should be((1,0))
+    
+    g.removeShip(s)
+    g.getPosOfShip(s) should be((-1,-1))
+  }
+  
   "The RowSum of an Empty Grid" should "be 0" in {
     val g = new Grid(5)
     g.getRowSum(0) should be(0)

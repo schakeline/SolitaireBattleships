@@ -42,22 +42,31 @@ class Grid (val size:Int) {
   
   private def cellsFree(fields:List[Tuple2[Int, Int]]):Boolean = fields.filterNot(f => gridArray(f._1)(f._2) == null).isEmpty
     
-  private def removeShip(ship:Ship) = {
-    for (x <- 0 until size)
-    { 
-      for(y <- 0 until size)
-      {
-    	  if(gridArray(x)(y) == ship)
-    		  gridArray(x)(y) = null
-      }
+  def removeShip(ship:Ship) = {
+    if (ship == null) throw new IllegalArgumentException
+    for (x <- 0 until size; y <- 0 until size) { 
+	  if(gridArray(x)(y) == ship)
+		  gridArray(x)(y) = null
     }
+  }
+  
+  def getPosOfShip(theShip:Ship):Tuple2[Int, Int] = {
+    if (theShip == null) throw new IllegalArgumentException
+    
+    // look for first cell that is occupied by the ship
+    for (y <- 0 until size; x <- 0 until size) {
+    	if (gridArray(x)(y) == theShip) {
+    	  return (x,y) // stop if first occupied by ship was found
+    	}
+    }
+    (-1,-1)
   }
     
   def getRowSum(row:Int) = {
     var sum = 0
     for(i <- 0 until size){
       if((gridArray(i)(row)) != null) 
-        sum = sum +1
+        sum += 1
     }
     sum
   }
@@ -66,7 +75,7 @@ class Grid (val size:Int) {
     var sum = 0
     for(i <- 0 until size){
       if((gridArray(column)(i)) != null) 
-        sum = sum +1
+        sum += 1
     }
     sum
   }
