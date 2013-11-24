@@ -15,6 +15,8 @@ class GameController {
 		var ships:List[Ship] = dummyShips
 
 		model = new Battleship(grid, ships)
+
+		model.userGrid.placeShip(ships(2), 1, 1, Orientation.Horizontal)
 		model
 	}
 

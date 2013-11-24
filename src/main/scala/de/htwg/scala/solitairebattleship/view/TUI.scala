@@ -9,6 +9,7 @@ import de.htwg.scala.solitairebattleship.model.Ship
 class TUI(val controller:GameController) { // extends IView
   // listenTo controller
   
+  // TODO: replace with user input
   var model:Battleship = controller.createGameWithSize(10)
   update
 
@@ -60,7 +61,10 @@ class TUI(val controller:GameController) { // extends IView
   			  j match {
 	  			case 0 => ((i+65).toChar + "|")
 	  			case x if (x == size+1) => g.getRowSum(i).toString + "\n"
-	  			case _ => if (g.getCell(i, j-1) == null) "~|" else "X|"
+	  			case _ => {
+	  				var s:Ship = g.getCell(i, j-1)
+	  				if (s == null) "~|" else s.id+"|"
+	  			}
   			}
   			rows += field
   		}
@@ -99,5 +103,5 @@ class TUI(val controller:GameController) { // extends IView
   	}
   	println(output)
   }
-  
+
 }
