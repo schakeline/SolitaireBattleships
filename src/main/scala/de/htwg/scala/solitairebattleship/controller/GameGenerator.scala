@@ -29,10 +29,6 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
 	
 	def placeShips(shipIDs:List[Int], grid:Grid,possiblePositions:List[ShipPositions]):Unit ={
   
-  	//print debug infos
-  	print("\nnot placed:")
-  	shipIDs.foreach(print(_))
-  
   	//every id is set
   	if(shipIDs.size==0){
   		solutions = grid :: solutions
@@ -48,19 +44,17 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
   		if(nextShipPositions.size == 0)
   			return
   		
-  		
+  		//take one random position from all possible positions
   		val r = rand.nextInt(nextShipPositions.size-1)
   		val x = nextShipPositions(r).x
   		val y = nextShipPositions(r).y
   		val or = nextShipPositions(r).orientation
   		
-  		//delete
-  		val tmpPos = possiblePositions.filterNot(_ == nextShipPositions(r))
-			
+  		//delete the used position
+  		tmp(0).rmPosition(x, y, or)
+  		val tmpPos = possiblePositions
   		
-  		print(" Pos: "+ x + "\\" + y)
-  		
-  		if(grid.getCell(x, y) == null)
+  		if(grid.getCell(x, y) == null) //TODO can it happen that one of the other used cells is not empty
   		{
   			//the Cell is empty so place the ship
   			grid.placeShip(theShip, x, y, or)
@@ -73,9 +67,7 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
   				//ship is not placed. put it into the list of not set ships
   				tmpIds = theShip.id :: tmpIds
   				return
-  			}
-  			
-  			
+  			}  			
   			placeShips(tmpIds,grid,tmpPos)
   		}
   		else
