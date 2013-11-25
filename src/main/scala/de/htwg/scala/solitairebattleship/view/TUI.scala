@@ -46,8 +46,8 @@ class TUI(val controller:GameController) { // extends IView
 
   private def fieldIndexRow(g:Grid) = {
   	var labels = ""
-  	for (i <- 0 until g.size) {
-  		labels += ((i+65).toChar + " ")
+  	for (x <- 0 until g.size) {
+  		labels += ((x+65).toChar + " ")
   	}
   	labels
   }
@@ -55,14 +55,14 @@ class TUI(val controller:GameController) { // extends IView
   private def gridRows(g:Grid) = {
   	var rows = ""
   	var size:Int = g.size
-  	for (i <- 0 until size) {
-  		for (j <- 0 until size+2) {
+  	for (y <- 0 until size) {
+  		for (x <- 0 until size+2) {
   			var field:String =
-  			  j match {
-	  			case 0 => ((i+65).toChar + "|")
-	  			case x if (x == size+1) => g.getRowSum(i).toString + "\n"
+  			  x match {
+	  			case 0 => ((y+65).toChar + "|")
+	  			case x if (x == size+1) => g.getRowSum(y).toString + "\n"
 	  			case _ => {
-	  				var s:Ship = g.getCell(i, j-1)
+	  				var s:Ship = g.getCell(x-1, y)
 	  				if (s == null) "~|" else s.id+"|"
 	  			}
   			}
@@ -74,8 +74,8 @@ class TUI(val controller:GameController) { // extends IView
 
   private def columnSumRow(g:Grid) = {
   	var sums = ""
-  	for (i <- 0 until g.size) {
-  		sums += (g.getColumnSum(i).toString + " ")
+  	for (x <- 0 until g.size) {
+  		sums += (g.getColumnSum(x).toString + " ")
   	}
   	sums
   }

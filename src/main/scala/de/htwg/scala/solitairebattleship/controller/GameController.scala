@@ -17,6 +17,7 @@ class GameController {
 		model = new Battleship(grid, ships)
 
 		model.userGrid.placeShip(ships(2), 1, 1, Orientation.Horizontal)
+		model.userGrid.placeShip(ships(4), 3, 4, Orientation.Vertical)
 		model
 	}
 
