@@ -1,7 +1,7 @@
 package de.htwg.scala.solitairebattleship.controller
 
 import de.htwg.scala.solitairebattleship.model._
-import de.htwg.scala.solitairebattleship.model.Orientation._
+import de.htwg.scala.solitairebattleship.util.Orientation._
 import scala.util._
 
 class GameGenerator (val allShips:List[Ship],val gameSize:Int){

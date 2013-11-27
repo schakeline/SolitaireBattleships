@@ -1,6 +1,6 @@
 package de.htwg.scala.solitairebattleship.controller
 
-import de.htwg.scala.solitairebattleship.model.Orientation._
+import de.htwg.scala.solitairebattleship.util.Orientation._
 
 /*
  Coordinate system

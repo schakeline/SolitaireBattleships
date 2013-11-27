@@ -15,5 +15,9 @@ object SolitaireBattleship {
 	  val tui = new TUI(controller)
 
 	  // start input from tui
+	  do {
+	  	print("> ")
+	  }
+	  while (tui.processUserInput(readLine()))
 	}
 }

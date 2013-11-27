@@ -1,5 +1,5 @@
 import de.htwg.scala.solitairebattleship.model._
-import de.htwg.scala.solitairebattleship.model.Orientation._
+import de.htwg.scala.solitairebattleship.util.Orientation._
 
 package de.htwg.scala.solitairebattleship.controller{
 	
@@ -14,12 +14,12 @@ package de.htwg.scala.solitairebattleship.controller{
 		 // horizontal placement
 		  for(x <- 0 to gridSize - ship.size){
 		    for(y <- 0 until gridSize)
-		      possiblePositions = new Position(x,y,Orientation.Horizontal):: possiblePositions
+		      possiblePositions = new Position(x,y,Horizontal):: possiblePositions
 		  }
 		  //vertical placement
 		  for(x <- 0 until gridSize){
 		    for(y <- 0 to gridSize - ship.size)
-		      possiblePositions = new Position(x,y,Orientation.Vertical)::possiblePositions
+		      possiblePositions = new Position(x,y,Vertical)::possiblePositions
 		  }
 		}
 	  

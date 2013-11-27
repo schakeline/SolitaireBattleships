@@ -1,13 +1,8 @@
 package de.htwg.scala.solitairebattleship.model
 
 import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
+import de.htwg.scala.solitairebattleship.util.Orientation._
 
-object Orientation extends Enumeration {
-	type Orientation = Value
-	val Horizontal, Vertical = Value
-}
-
-import de.htwg.scala.solitairebattleship.model.Orientation._
 
 class Grid (val size:Int) {
 private val gridArray = Array.ofDim[Ship](size, size)
@@ -26,7 +21,7 @@ private val gridArray = Array.ofDim[Ship](size, size)
 		var fields = (x, y) :: Nil
 		
 		for (i <- 0 until theShip.size) {
-			if (orientation == Orientation.Horizontal) fields = (x+i, y) :: fields
+			if (orientation == Horizontal) fields = (x+i, y) :: fields
 			else fields = (x, y+i) :: fields
 		}
 		

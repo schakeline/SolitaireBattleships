@@ -1,17 +1,18 @@
 package de.htwg.scala.solitairebattleship.model
 
-import de.htwg.scala.solitairebattleship.view.IView
+
+
 
 trait IBattleship {
-	
-  //var _genGrid:Grid
-  //var _userGrid:Grid
-  //var _ships:List[Ship]
+/*	
+  def userGrid
+  def userGrid_=(grid:Grid)
+  def genGrid
+  def genGrid_=(grid:Grid)
+  def ships
+  def ships_=(ships:List[Ship])
   
-  // Observer pattern
-  private var observers:List[IView] = Nil
-  
-  def addObserver(theView:IView) {observers = theView :: observers}
-  def rmObserver(theView:IView) {observers = observers.filterNot(p => p eq theView)}
-  protected def update {observers.foreach(f => f.receiveUpdate)}
+  def getUnplacedShips:List[Ship]
+  def placeShip(theShip:Ship, x:Int, y:Int, orientation:Orientation)
+*/
 }
