@@ -13,18 +13,20 @@ class GameController {
 		// game generation code goes here
 		// TODO: generate game for size 
 
-		model.genGrid = new Grid(gridSize)
-		model.userGrid = new Grid(gridSize)
+		//model.genGrid = new Grid(gridSize)
 		model.ships = dummyShips // (ship count <= 10 | 0 <= id < 10)!!!
+		model.genGrid = new GameGenerator(dummyShips, gridSize).generateGrid
+		model.userGrid = new Grid(gridSize)
+		
 
-		model.placeShip(model.ships(2), 1, 1, Horizontal)
-		model.placeShip(model.ships(4), 3, 4, Vertical)
+		// model.placeShip(model.ships(2), 1, 1, Horizontal)
+		// model.placeShip(model.ships(4), 3, 4, Vertical)
 	}
 
 	// TODO: Delete fkt if generation is implemented !!!
 	private def dummyShips:List[Ship] = {
 		var ships:List[Ship] = Nil
-		for (i <- 0 until 10) {
+		for (i <- 0 until 4) {
 			var s = i match {
 				case x if x < 4 => 1
 				case x if x < 7 => 2
@@ -50,6 +52,18 @@ class GameController {
 		// catch exceptions and pass to ui
 		// if all ships are placed validate game
 		// call uis error method
+
+		if (model.getUnplacedShips.isEmpty) {
+			if (Validator.validateNeighborhood(model.userGrid)) println ("NEIGBORHOOD: TRUE")
+			else println("NEIGBORHOOD: FALSE")
+
+			print("ERROR RowSums: ")
+			Validator.validateRowSums(model.userGrid, model.genGrid).foreach(r => print(r))
+
+			print("\nERROR ColumnSums: ")
+			Validator.validateColumnSums(model.userGrid, model.genGrid).foreach(c => print(c))
+
+		}
 	}
 
 	def removeShip(id:Int) {

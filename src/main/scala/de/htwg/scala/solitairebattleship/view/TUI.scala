@@ -114,16 +114,19 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   def processUserInput(in:String) = {
   	var continue = true
 
-  	in match {
-  		case "q" => continue = false
-  		case "v" => println("controller.validate")
-  		case "n" => askForGridSize
+    var input = in.toUpperCase
+    println("INPUT: "+input)
+
+  	input match {
+  		case "Q" => continue = false
+  		case "V" => println("controller.validate")
+  		case "N" => askForGridSize
   		case _ => {
-  			in.toList.filter(c => c != ' ') match {
-  				case 'm' :: 'v' :: ship :: row :: column :: orientation :: Nil => {
-  					controller.placeShip((ship.toInt - '0'.toInt),(row.toInt - 'A'.toInt), (column.toInt - 'A'.toInt), (if (orientation=='h') Horizontal else Vertical))
+  			input.toList.filter(c => c != ' ') match {
+  				case 'M' :: 'V' :: ship :: column :: row :: orientation :: Nil => {
+  					controller.placeShip((ship.toInt - '0'.toInt),(row.toInt - 'A'.toInt), (column.toInt - 'A'.toInt), (if (orientation=='H') Horizontal else Vertical))
   				}
-  				case 'r' :: 'm' :: ship :: Nil => {
+  				case 'R' :: 'M' :: ship :: Nil => {
   					controller.removeShip(ship.toInt - '0'.toInt)
   				}
   				case _ => println("Wrong Input!")
