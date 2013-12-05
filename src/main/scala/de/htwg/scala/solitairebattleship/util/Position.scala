@@ -1,4 +1,4 @@
-package de.htwg.scala.solitairebattleship.controller
+package de.htwg.scala.solitairebattleship.util
 
 import de.htwg.scala.solitairebattleship.util.Orientation._
 
