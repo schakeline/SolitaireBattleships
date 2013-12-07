@@ -1,9 +1,10 @@
 import de.htwg.scala.solitairebattleship.model._
 import de.htwg.scala.solitairebattleship.util.Orientation._
+import de.htwg.scala.solitairebattleship.util.Position
 
 package de.htwg.scala.solitairebattleship.controller{
 	
-	class ShipPositions(val ship:Ship,  val gridSize:Int){
+  	case class ShipPositions(val ship:Ship,  val gridSize:Int){
 	  
 	  if(ship == null) throw new IllegalArgumentException()
 		  
@@ -23,11 +24,16 @@ package de.htwg.scala.solitairebattleship.controller{
 		  }
 		}
 	  
-	  def rmPosition(x:Int, y:Int, orientation:Orientation) = {
+	  def rmPosition(x:Int, y:Int, orientation:Orientation):Unit = {
 	    possiblePositions = possiblePositions.filterNot(p => p.x == x 
 	    													 && p.y == y 
 	    													 && p.orientation == orientation)
 	  }
+	  
+	  def rmPosition(position:Position):Unit = {
+	    rmPosition(position.x, position.y, position.orientation)
+	  }
+	  
 	}
 }
 

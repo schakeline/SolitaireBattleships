@@ -2,6 +2,7 @@ package de.htwg.scala.solitairebattleship.model
 
 import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
 import de.htwg.scala.solitairebattleship.util.Orientation._
+import de.htwg.scala.solitairebattleship.util.Position
 
 
 class Grid (val size:Int) {
@@ -9,8 +10,11 @@ private val gridArray = Array.ofDim[Ship](size, size)
   
   if (size < 2) throw new IllegalArgumentException
   
+  def placeShip(theShip:Ship, position:Position):Unit = {
+    placeShip(theShip,position.x, position.y, position.orientation)
+  }
 	
-  def placeShip(theShip:Ship, x:Int, y:Int, orientation:Orientation) = {
+  def placeShip(theShip:Ship, x:Int, y:Int, orientation:Orientation):Unit = {
 		  
 		if (theShip == null) throw new IllegalArgumentException
 		if (x < 0 || x >= size || y < 0 || y >= size) throw new IndexOutOfBoundsException
@@ -79,4 +83,12 @@ private val gridArray = Array.ofDim[Ship](size, size)
     gridArray(y)(x)
   }
   
+  
+  def copy():Grid = {
+    var copy = new Grid(size)
+    for(x <- 0 until size; y <- 0 until size){
+      copy.gridArray(x)(y) = gridArray(x)(y)
+    }
+    copy
+  }
 }

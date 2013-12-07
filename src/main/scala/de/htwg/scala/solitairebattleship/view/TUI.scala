@@ -147,7 +147,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   		try {
   			gSize = in.toInt
   			gSize match {
-  			case x:Int if (x > 2 && x < 11) => controller.newGame(gSize)
+  			case x:Int if (x > 1 && x < 11) => controller.newGame(gSize)
   			case _ => {
   				println("Wrong Input!")
   				in = null

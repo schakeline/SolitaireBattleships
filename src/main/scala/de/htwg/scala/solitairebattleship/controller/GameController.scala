@@ -14,22 +14,19 @@ class GameController {
 		// TODO: generate game for size 
 
 		//model.genGrid = new Grid(gridSize)
-		model.ships = dummyShips // (ship count <= 10 | 0 <= id < 10)!!!
-		model.genGrid = new GameGenerator(dummyShips, gridSize).generateGrid
+		//model.ships = dummyShips // (ship count <= 10 | 0 <= id < 10)!!!
+		model.ships = ShipFactory.getShips(gridSize)
+		model.genGrid = new GameGenerator(model.ships, gridSize).generateGrid
 		model.userGrid = new Grid(gridSize)
-		
-
-		// model.placeShip(model.ships(2), 1, 1, Horizontal)
-		// model.placeShip(model.ships(4), 3, 4, Vertical)
 	}
 
 	// TODO: Delete fkt if generation is implemented !!!
 	private def dummyShips:List[Ship] = {
 		var ships:List[Ship] = Nil
-		for (i <- 0 until 4) {
+		for (i <- 0 until 10) {
 			var s = i match {
 				case x if x < 4 => 1
-				case x if x < 7 => 2
+				case x if x < 7 => 3
 				case x if x < 9 => 3
 				case _ => 4
 			}
