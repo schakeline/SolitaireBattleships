@@ -7,28 +7,45 @@ object Validator {
   def validateNeighborhood(theGrid:Grid):Boolean  = {
 	  var valid = false; 
 	  
-	  for(x <- 0 until theGrid.size -1; y <- 0 until theGrid.size -1){
+	  for(x <- 0 until theGrid.size; y <- 0 until theGrid.size){
 		   var hotSpot = theGrid.getCell(x,y)
-		   var eastNeighbor = theGrid.getCell(x+1,y)
-		   var southNeighbor = theGrid.getCell(x,y+1)
-		   var southEastNeighbor = theGrid.getCell(x+1,y+1)
-		   
+		   		   
 		   if(hotSpot != null){
-		     if(hotSpot != eastNeighbor && eastNeighbor != null) 
-		       return false
 		     
-		     if(hotSpot != southNeighbor && southNeighbor != null)
-		       return false
-		       
-		     if(hotSpot != southEastNeighbor && southEastNeighbor != null)
-		       return false
-
-		       // FIXME: validation for SW is missing.
+		     if(x < theGrid.size -1 ){
+		       var eastNeighbor = theGrid.getCell(x+1,y)
+		       //if(hotSpot != eastNeighbor && eastNeighbor != null) return false
+		       if(CollisionBetween(hotSpot, eastNeighbor)) return false
+		     }
+		     
+		     if(y < theGrid.size -1 ) {
+		       var southNeighbor = theGrid.getCell(x,y+1)
+		       //if(hotSpot != southNeighbor && southNeighbor != null) return false
+		       if(CollisionBetween(hotSpot, southNeighbor)) return false
+		     }
+		     
+		     if(x < theGrid.size -1 && y < theGrid.size -1){
+		       var southEastNeighbor = theGrid.getCell(x+1,y+1)
+		       //if(hotSpot != southEastNeighbor && southEastNeighbor != null)return false
+		       if(CollisionBetween(hotSpot, southEastNeighbor)) return false
+		     }
+		    	 
+		     if(x > 1 && y < theGrid.size - 1) {
+		       var southWestNeighbor = theGrid.getCell(x - 1, y + 1)
+		       //if(hotSpot != southWestNeighbor && southWestNeighbor != null) return false
+		       if(CollisionBetween(hotSpot,southWestNeighbor)) return false
+		     }
 		   }
 	    }
 	  return true
 	}
 
+  	private def CollisionBetween(hotspot:Ship, neighbor:Ship):Boolean = {
+  	  if(hotspot != neighbor && neighbor != null) return true
+  	  else false
+  	}
+  
+  
 	def validateRowSums(userGrid:Grid, refGrid:Grid):List[Int] = {
 		
 		var result:List[Int] = Nil

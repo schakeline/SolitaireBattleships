@@ -3,6 +3,7 @@ package de.htwg.scala.solitairebattleship.model
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
+import de.htwg.scala.solitairebattleship.util.Orientation
 
 class GridSpec extends FlatSpec with Matchers {
 	
