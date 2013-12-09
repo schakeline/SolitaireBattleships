@@ -115,7 +115,6 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   	var continue = true
 
     var input = in.toUpperCase
-    println("INPUT: "+input)
 
   	input match {
   		case "Q" => continue = false
