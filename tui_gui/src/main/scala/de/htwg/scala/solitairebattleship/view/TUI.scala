@@ -18,7 +18,6 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   def update = {printTUI}
 
   private def printTUI = {
-  	println("\n# SOLITAIRE BATTLESHIP \n")
   	printGrid()
   	println("")
   	printUnplacedShips
@@ -42,7 +41,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   	
   	var gridStr = "  " + fieldIndexRow(model.userGrid) + "\n"
   	gridStr += gridRows()
-  	gridStr += "  " + columnSumRow(model.genGrid)
+  	gridStr += "  " + columnSumRow
   	
   	println(gridStr)
   }
@@ -63,7 +62,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   			var field:String =
   			  x match {
 	  			case 0 => ((y+65).toChar + "|")
-	  			case x if (x == size+1) => model.genGrid.getRowSum(y).toString + "\n"
+	  			case x if (x == size+1) => getColoredRowSum(y) + "\n"
 	  			case _ => {
 	  				var s:Ship = model.userGrid.getCell(x-1, y)
 	  				if (s == null) "~|" else s.id+"|"
@@ -75,14 +74,37 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   	rows
   }
 
-  private def columnSumRow(g:Grid) = {
+  private def columnSumRow = {
   	var sums = ""
-  	for (x <- 0 until g.size) {
-  		sums += (g.getColumnSum(x).toString + " ")
+  	for (x <- 0 until model.userGrid.size) {
+  		sums += (getColoredColumnSum(x) + " ")
   	}
   	sums
   }
   
+  private def getColoredRowSum(r:Int) = {
+    val rowSumRef = model.genGrid.getRowSum(r)
+
+    if (model.getUnplacedShips.isEmpty) {
+      if (model.validateRowSum(r)) colorGreen(rowSumRef.toString)
+      else colorRed(rowSumRef.toString)
+    }
+    else rowSumRef.toString
+  }
+
+  private def getColoredColumnSum(c:Int) = {
+    val columnSumRef = model.genGrid.getColumnSum(c)
+
+    if (model.getUnplacedShips.isEmpty) {
+      if (model.validateColumnSum(c)) colorGreen(columnSumRef.toString)
+      else colorRed(columnSumRef.toString)
+    }
+    else columnSumRef.toString
+  }
+
+  private def colorRed(s:String) = {Console.RED + s + Console.RESET}
+  private def colorGreen(s:String) = {Console.GREEN + s + Console.RESET}
+
   /*
 	## Unplaced ships
 	### with length 1: <8>
@@ -108,7 +130,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   }
 
   private def printInputCommands {
-  	println("Enter q [Quit], n <size (2 < size < 11)> [new game], v [validate game], mv <id> <y> <x> <orientation> [move ship], rm <id> [remove ship]")
+  	println("Enter q [quit], n [new game], v [validate game], mv <id> <y> <x> <orientation> [move ship], rm <id> [remove ship]")
   }
 
   def processUserInput(in:String) = {
@@ -136,7 +158,8 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   }
 
   private def askForGridSize = {
-  	println("Please enter the desired gird size [3, 10].")
+  	printTitle
+    println("Please enter the desired gird size [3, 10].")
   	
   	var in:String = null;
   	do {
@@ -151,7 +174,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   				println("Wrong Input!")
   				in = null
   			}
-  		}
+  		  }
   		} catch {
   			case e:NumberFormatException =>
   			println("[ERROR] Entered string is not a number.")
@@ -159,6 +182,12 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   		}
 
   	} while (in == null)
+  }
+
+  private def printTitle {
+    print(Console.YELLOW)
+    scala.io.Source.fromURL(getClass.getResource("/title.txt")).getLines.foreach(s => println(s))
+    print(Console.RESET)
   }
 
 }

@@ -65,5 +65,8 @@ class Battleship() extends Observable {
 			}
 		}
 		unplacedShips.toList.sortBy(x => (x.size, x.id))
-	}	
+	}
+
+	def validateRowSum(r:Int) = {userGrid.getRowSum(r) == genGrid.getRowSum(r)}
+	def validateColumnSum(c:Int) = {userGrid.getColumnSum(c) == genGrid.getColumnSum(c)}
 }

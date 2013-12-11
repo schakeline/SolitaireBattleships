@@ -51,13 +51,11 @@ class GameController {
 		// call uis error method
 
 		if (model.getUnplacedShips.isEmpty) {
-			if (Validator.validateNeighborhood(model.userGrid)) println ("NEIGBORHOOD: TRUE")
-			else println("NEIGBORHOOD: FALSE")
+			if (Validator.validateNeighborhood(model.userGrid))
+			
 
-			print("ERROR RowSums: ")
 			Validator.validateRowSums(model.userGrid, model.genGrid).foreach(r => print(r))
 
-			print("\nERROR ColumnSums: ")
 			Validator.validateColumnSums(model.userGrid, model.genGrid).foreach(c => print(c))
 
 		}
