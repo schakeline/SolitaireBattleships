@@ -9,3 +9,5 @@ libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.10" % "2.0.RC3" % "test"
   //"play" % "play_2.10" % "2.1-SNAPSHOT"
 )
+
+org.scalastyle.sbt.ScalastylePlugin.Settings

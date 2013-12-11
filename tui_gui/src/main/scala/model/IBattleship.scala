@@ -4,7 +4,7 @@ package de.htwg.scala.solitairebattleship.model
 
 
 trait IBattleship {
-/*	
+/*  
   def userGrid
   def userGrid_=(grid:Grid)
   def genGrid
