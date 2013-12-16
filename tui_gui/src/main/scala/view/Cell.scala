@@ -9,11 +9,11 @@ class Cell(x:Int, y:Int, isEmpty:Boolean, theGUI:GUI)  extends Button {
 	super.border =  javax.swing.BorderFactory.createLineBorder(java.awt.Color.BLACK)
 	
 	if(isEmpty == false){
-	  	super.icon = new javax.swing.ImageIcon(".\\Resources\\black.gif")
+	  	super.icon = new javax.swing.ImageIcon(getClass.getResource("/black.gif"))
 	    super.repaint	    
 	  }
 	else{
-	  super.icon = new javax.swing.ImageIcon(".\\Resources\\grey.gif")
+	  super.icon = new javax.swing.ImageIcon(getClass.getResource("/grey.gif"))
 	  super.repaint	    
 	}
 	
