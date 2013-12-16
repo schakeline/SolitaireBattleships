@@ -18,7 +18,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   def update = {printTUI}
 
   private def printTUI = {
-    printGrid()
+    printGrid
     printUnplacedShips
     printInputCommands
   }
@@ -39,7 +39,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   private def printGrid {
     
     var gridStr = "  " + fieldIndexRow(model.userGrid) + "\n"
-    gridStr += gridRows()
+    gridStr += gridRows
     gridStr += "  " + columnSumRow
     
     println(gridStr)
