@@ -54,7 +54,10 @@ class Battleship() extends Observable {
   /* 
    * @returns a orderd list of unset ships, beginning with the smallest ship.
   **/
-  def getUnplacedShips:List[Ship] = {
+  def getUnplacedShips:List[Ship] = {    
+    if(ships == null)
+      return Nil
+      
     var unplacedShips = ships.toSet
 
     for (i <- 0 until userGrid.size; j <- 0 until userGrid.size) {
