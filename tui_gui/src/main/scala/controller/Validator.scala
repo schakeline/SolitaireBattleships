@@ -30,7 +30,7 @@ object Validator {
            if(CollisionBetween(hotSpot, southEastNeighbor)) return false
          }
            
-         if(x > 1 && y < theGrid.size - 1) {
+         if(x >= 1 && y < theGrid.size - 1) {
            var southWestNeighbor = theGrid.getCell(x - 1, y + 1)
            //if(hotSpot != southWestNeighbor && southWestNeighbor != null) return false
            if(CollisionBetween(hotSpot,southWestNeighbor)) return false
