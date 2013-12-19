@@ -25,7 +25,7 @@ class Cell(x:Int, y:Int, isEmpty:Boolean, theGUI:GUI)  extends Button {
 	      if(isEmpty)
 	    	  theGUI.placeShip(x, y)
 	      else{
-	        val ship = theGUI.model.userGrid.getCell(x, y)
+	        val ship = theGUI.model.gameGrid.getCell(x, y)
 	        theGUI.model.removeShip(ship)
 	      }
 	    }

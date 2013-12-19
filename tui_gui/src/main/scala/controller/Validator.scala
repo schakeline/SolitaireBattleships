@@ -4,7 +4,7 @@ import de.htwg.scala.solitairebattleship.model._
 
 
 object Validator {
-  def validateNeighborhood(theGrid:Grid):Boolean  = {
+  def validateNeighborhood(theGrid:IGrid):Boolean  = {
     var valid = false; 
     
     for(x <- 0 until theGrid.size; y <- 0 until theGrid.size){
@@ -40,13 +40,13 @@ object Validator {
     return true
   }
 
-    private def CollisionBetween(hotspot:Ship, neighbor:Ship):Boolean = {
-      if(hotspot != neighbor && neighbor != null) return true
-      else false
-    }
+  private def CollisionBetween(hotspot:Ship, neighbor:Ship):Boolean = {
+    if(hotspot != neighbor && neighbor != null) return true
+    else false
+  }
   
-  
-  def validateRowSums(userGrid:Grid, refGrid:Grid):List[Int] = {
+  // FIXME: validation not working because userGrid returns not the real rowSum
+  def validateRowSums(userGrid:IGrid, refGrid:IGrid):List[Int] = {
     
     var result:List[Int] = Nil
 
@@ -58,7 +58,8 @@ object Validator {
     result
   }
 
-  def validateColumnSums(userGrid:Grid, refGrid:Grid):List[Int] = {
+  // FIXME: validation not working because userGrid returns not the real columnSum
+  def validateColumnSums(userGrid:IGrid, refGrid:IGrid):List[Int] = {
     var result:List[Int] = Nil
 
     for (x <- 0 until userGrid.size) {

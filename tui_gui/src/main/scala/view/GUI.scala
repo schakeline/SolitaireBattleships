@@ -9,7 +9,7 @@ import scala.swing.event.ButtonClicked
 import com.sun.java.util.jar.pack.Package
 
 class GUI(controller:GameController) extends swing.Frame with Observer{
-  var model:Battleship = controller.model
+  var model = controller.model
   model.add(this)
   
   val TextFieldSize = new TextField("5")
@@ -18,7 +18,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
   val ButtonEndGame = new Button("Exit")
   val state = new Label("")
 
-  var curGrid:Grid = null;
+  var curGrid:IGrid = null;
   
   var selected = -1;
   var startPos:Tuple2[Int,Int] = (-1,-1) 
@@ -35,12 +35,12 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
       		val s:Int = TextFieldSize.text.toInt
       		state.text = "new Game with size: " + s      		      		
       		controller.newGame(s)  
-      		curGrid = model.userGrid;
+      		curGrid = model.gameGrid;
       		update //need to Update manual because selecting the curGrid is not a change in the model
       	}
       	case ButtonClicked(ButtonShowSolution) => {
       		state.text = "ShowSolution"
-      		curGrid = model.genGrid;
+      		curGrid = model.solution;
       		update //need to Update again, because now "curGrid" is set
       	}
       	case ButtonClicked(ButtonEndGame) => {
@@ -54,7 +54,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     contents = controlPanel
   }
   
-  def gridField(grid:Grid):GridPanel = {
+  def gridField(grid:IGrid):GridPanel = {
     if(grid == null)
     {
       return new GridPanel(1,1)
@@ -140,8 +140,8 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     else {
       
       if(curGrid != null){
-    	val clm = Validator.validateColumnSums(model.userGrid, model.genGrid)
-    	val row = Validator.validateRowSums(model.userGrid, model.genGrid)
+    	val clm = Validator.validateColumnSums(model.gameGrid, model.solution)
+    	val row = Validator.validateRowSums(model.gameGrid, model.solution)
       
       	if(clm.isEmpty && row.isEmpty)
     	  state.text = "congratulation!"
@@ -155,21 +155,21 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
   private def emptyField = {new Label(){background = java.awt.Color.WHITE}}
   
   private def clmSumField(column:Int) = {
-    new Label(model.genGrid.getColumnSum(column).toString){
+    new Label(model.solution.getColumnSum(column).toString){
           	horizontalAlignment = Alignment.Center
           	verticalAlignment = Alignment.Center
     	}
     }
   
   private def rowSumField(row:Int) = {
-    new Label(model.genGrid.getRowSum(row).toString ){
+    new Label(model.solution.getRowSum(row).toString ){
     	horizontalAlignment = Alignment.Center
     	verticalAlignment = Alignment.Center
     	}
     }
   
   
-  private def cell(x:Int, y:Int, grid:Grid):Button = {
+  private def cell(x:Int, y:Int, grid:IGrid):Button = {
     if(grid == null) new Cell(x,y,true, this)
     else if(grid.getCell(x, y) == null) new Cell(x,y,true, this)
     else { new Cell(x,y,false, this)   }
@@ -189,7 +189,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
       throw new IllegalArgumentException()
     val theShip = model.ships.filter(p => p.id == selected)
     
-    val size:Int = model.userGrid.size
+    val size:Int = model.gridSize
     
     if(startPos._1 < 0 || startPos._1 > size || startPos._2 < 0 || startPos._2 > size)
     {

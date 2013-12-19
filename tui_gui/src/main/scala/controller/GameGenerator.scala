@@ -64,7 +64,7 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
       val size = positions.size
       for(i <- 0 until size)
     {
-      val tmpGrid = grid.copy
+      val tmpGrid = grid
       val tmpPos = positions(rand.nextInt(size - i))
       positions = positions.filter(p => p != tmpPos)
       
@@ -118,7 +118,3 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
   }
  
 }
-  
-  
-  
-  

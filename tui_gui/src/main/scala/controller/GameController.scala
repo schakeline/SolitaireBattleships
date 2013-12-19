@@ -4,39 +4,22 @@ import de.htwg.scala.solitairebattleship.model._
 import de.htwg.scala.solitairebattleship.util.Orientation._
 
 class GameController {
-  private var _model:Battleship = new Battleship
-  private def model_=(model:Battleship) {_model = model}
-  def model = _model
+  
+  val model = Game
 
+  /*private var _model:IGame = new Game
+  private def model_=(model:IGame) {_model = model}
+  def model = _model
+  */
   def newGame(gridSize:Int = 10) {
     
-    // game generation code goes here
-    // TODO: generate game for size 
-
-    //model.genGrid = new Grid(gridSize)
-    //model.ships = dummyShips // (ship count <= 10 | 0 <= id < 10)!!!
-    model.ships = ShipFactory.getShips(gridSize)
-    model.genGrid = new GameGenerator(model.ships, gridSize).generateGrid
-    model.userGrid = new Grid(gridSize)
-  }
-
-  // TODO: Delete fkt if generation is implemented !!!
-  private def dummyShips:List[Ship] = {
-    var ships:List[Ship] = Nil
-    for (i <- 0 until 10) {
-      var s = i match {
-        case x if x < 4 => 1
-        case x if x < 7 => 3
-        case x if x < 9 => 3
-        case _ => 4
-      }
-      ships = (new Ship(i, s)) :: ships
-    }
-    ships
+    val ships:List[Ship] = ShipFactory.getShips(gridSize)
+    val grid = new GameGenerator(ships, gridSize).generateGrid
+    
+    model.init(ships, grid)
   }
 
   def placeShip(id:Int, x:Int, y:Int, orientation:Orientation) {
-    
     try {
       // get ship
       var ship = model.getShipWithID(id) // return type is Option[Ship]
@@ -50,19 +33,17 @@ class GameController {
     // if all ships are placed validate game
     // call uis error method
 
+    // FIXME: Validation 2nd if-block not working
     if (model.getUnplacedShips.isEmpty) {
-      if (Validator.validateNeighborhood(model.userGrid))
-      
+      if (Validator.validateNeighborhood(model.gameGrid))
+    
+      Validator.validateRowSums(model.gameGrid, model.solution).foreach(r => print(r))
 
-      Validator.validateRowSums(model.userGrid, model.genGrid).foreach(r => print(r))
-
-      Validator.validateColumnSums(model.userGrid, model.genGrid).foreach(c => print(c))
-
+      Validator.validateColumnSums(model.gameGrid, model.solution).foreach(c => print(c))
     }
   }
 
   def removeShip(id:Int) {
-    
     try {
       // get ship
       var ship = model.getShipWithID(id) // return type is Option[Ship]
@@ -70,7 +51,6 @@ class GameController {
     } catch {
       case e:Exception => println("ERROR")//FIXME: view.showError(e)
     }
-
   }
 
 }

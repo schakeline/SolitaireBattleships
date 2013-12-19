@@ -2,23 +2,26 @@ package de.htwg.scala.solitairebattleship.view
 
 import de.htwg.scala.solitairebattleship.util.Observer
 import de.htwg.scala.solitairebattleship.controller.GameController
-import de.htwg.scala.solitairebattleship.model.Battleship
-import de.htwg.scala.solitairebattleship.model.Grid
+import de.htwg.scala.solitairebattleship.model.IGame
+import de.htwg.scala.solitairebattleship.model.IGrid
 import de.htwg.scala.solitairebattleship.model.Ship
 import de.htwg.scala.solitairebattleship.util.Orientation._
 import java.lang.NumberFormatException
 
 class TUI(val controller:GameController) extends Observer { // extends IView
-  var model:Battleship = controller.model
+  var model = controller.model
+  
   // listenTo model
   model.add(this)
   askForGridSize
   
 
-  def update = {printTUI}
+  def update {
+    printTUI
+  }
 
-  private def printTUI = {
-    printGrid
+  private def printTUI {
+    printGrid(model.gameGrid)
     printUnplacedShips
     printInputCommands
   }
@@ -26,44 +29,44 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   /*
       A B C D E F G H I
     A|~|~|~|~|~|~|~|~|~|0
-    B|+|~|+|+|~|~|~|+|+|3
-    C|+|~|~|~|~|~|~|~|~|1
-    D|~|~|#|#|#|#|~|~|~|4
+    B|1|~|2|2|~|~|~|+|+|3
+    C|1|~|~|~|~|~|~|~|~|1
+    D|~|~|3|3|3|3|~|~|~|4
     E|~|~|~|~|~|~|~|~|~|4
     F|~|~|~|~|~|~|~|~|~|4
-    G|~|~|X|X|X|X|~|~|~|4
+    G|~|~|4|4|4|4|~|~|~|4
     H|~|~|~|~|~|~|~|~|~|4
-  I|~|~|<|=|=|>|~|~|~|4
+    I|~|~|5|5|5|5|~|~|~|4
       2 0 2 2 1 1 0 1 1
    */
-  private def printGrid {
+  private def printGrid(g:IGrid) {
     
-    var gridStr = "  " + fieldIndexRow(model.userGrid) + "\n"
-    gridStr += gridRows
-    gridStr += "  " + columnSumRow
+    var gridStr = "  " + fieldIndexRow(g.size) + "\n"
+    gridStr += gridRows(g)
+    gridStr += "  " + columnSumRow(g)
     
     println(gridStr)
   }
 
-  private def fieldIndexRow(g:Grid) = {
+  private def fieldIndexRow(gridSize:Int) = {
     var labels = ""
-    for (x <- 0 until g.size) {
+    for (x <- 0 until gridSize) {
       labels += ((x+65).toChar + " ")
     }
     labels
   }
 
-  private def gridRows = {
+  private def gridRows(g:IGrid) = {
     var rows = ""
-    var size:Int = model.userGrid.size
+    var size = g.size
     for (y <- 0 until size) {
       for (x <- 0 until size+2) {
         var field:String =
           x match {
           case 0 => ((y+65).toChar + "|")
-          case x if (x == size+1) => getColoredRowSum(y) + "\n"
+          case x if (x == size+1) => getColoredRowSum(y, g.getRowSum(y)) + "\n"
           case _ => {
-            var s:Ship = model.userGrid.getCell(x-1, y)
+            var s:Ship = g.getCell(x-1, y)
             if (s == null) "~|" else s.id+"|"
           }
         }
@@ -73,32 +76,28 @@ class TUI(val controller:GameController) extends Observer { // extends IView
     rows
   }
 
-  private def columnSumRow = {
+  private def columnSumRow(g:IGrid) = {
     var sums = ""
-    for (x <- 0 until model.userGrid.size) {
-      sums += (getColoredColumnSum(x) + " ")
+    for (x <- 0 until model.gameGrid.size) {
+      sums += (getColoredColumnSum(x, g.getColumnSum(x)) + " ")
     }
     sums
   }
   
-  private def getColoredRowSum(r:Int) = {
-    val rowSumRef = model.genGrid.getRowSum(r)
-
+  private def getColoredRowSum(row:Int, sum:Int) = {
     if (model.getUnplacedShips.isEmpty) {
-      if (model.validateRowSum(r)) colorGreen(rowSumRef.toString)
-      else colorRed(rowSumRef.toString)
+      if (model.validateRowSum(row)) colorGreen(sum.toString) // FIXME: Validation
+      else colorRed(sum.toString)
     }
-    else rowSumRef.toString
+    else sum.toString
   }
 
-  private def getColoredColumnSum(c:Int) = {
-    val columnSumRef = model.genGrid.getColumnSum(c)
-
+  private def getColoredColumnSum(col:Int, sum:Int) = {
     if (model.getUnplacedShips.isEmpty) {
-      if (model.validateColumnSum(c)) colorGreen(columnSumRef.toString)
-      else colorRed(columnSumRef.toString)
+      if (model.validateColumnSum(col)) colorGreen(sum.toString) // FIXME: Validation
+      else colorRed(sum.toString)
     }
-    else columnSumRef.toString
+    else sum.toString
   }
 
   private def colorRed(s:String) = {Console.RED + s + Console.RESET}
@@ -129,7 +128,8 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   }
 
   private def printInputCommands {
-    println("Enter q [quit], n [new game], v [validate game], mv <id> <y> <x> <orientation> [move ship], rm <id> [remove ship]")
+    println("Enter q [quit], n [new game], v [validate game]" +
+      "mv <id> <y> <x> <orientation> [move ship], rm <id> [remove ship]")
   }
 
   def processUserInput(in:String) = {
@@ -144,7 +144,10 @@ class TUI(val controller:GameController) extends Observer { // extends IView
       case _ => {
         input.toList.filter(c => c != ' ') match {
           case 'M' :: 'V' :: ship :: column :: row :: orientation :: Nil => {
-            controller.placeShip((ship.toInt - '0'.toInt),(row.toInt - 'A'.toInt), (column.toInt - 'A'.toInt), (if (orientation=='H') Horizontal else Vertical))
+            controller.placeShip( (ship.toInt - '0'.toInt),
+              (row.toInt - 'A'.toInt),
+              (column.toInt - 'A'.toInt),
+              (if (orientation=='H') Horizontal else Vertical) )
           }
           case 'R' :: 'M' :: ship :: Nil => {
             controller.removeShip(ship.toInt - '0'.toInt)
@@ -162,7 +165,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
     
     var in:String = null;
     do {
-      print("> ")
+      print(Console.BLUE + "> " + Console.RESET)
       in = readLine()
       var gSize = -1
       try {
@@ -184,9 +187,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   }
 
   private def printTitle {
-    print(Console.YELLOW)
-    scala.io.Source.fromURL(getClass.getResource("/title.txt")).getLines.foreach(s => println(s))
-    print(Console.RESET)
+    scala.io.Source.fromURL(getClass.getResource("/title.txt")).getLines.foreach(s => println(Console.YELLOW+s+Console.RESET))    
   }
 
 }

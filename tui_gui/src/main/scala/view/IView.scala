@@ -1,8 +1,8 @@
 package de.htwg.scala.solitairebattleship.view
 
-import de.htwg.scala.solitairebattleship.model.IBattleship
+import de.htwg.scala.solitairebattleship.model.IGame
 
 trait IView {
-  var model:IBattleship // setter: observer registrieren
+  var model:IGame // setter: observer registrieren
   def receiveUpdate()
 }
