@@ -2,17 +2,13 @@ package de.htwg.scala.solitairebattleship.view
 
 import de.htwg.scala.solitairebattleship.util.Observer
 import de.htwg.scala.solitairebattleship.controller.GameController
-import de.htwg.scala.solitairebattleship.model.IGame
-import de.htwg.scala.solitairebattleship.model.IGrid
-import de.htwg.scala.solitairebattleship.model.Ship
+import de.htwg.scala.solitairebattleship.model._
 import de.htwg.scala.solitairebattleship.util.Orientation._
 import java.lang.NumberFormatException
 
 class TUI(val controller:GameController) extends Observer { // extends IView
-  var model = controller.model
-  
   // listenTo model
-  model.add(this)
+  Model.add(this)
   askForGridSize
   
 
@@ -21,7 +17,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   }
 
   private def printTUI {
-    printGrid(model.gameGrid)
+    printGrid(Model.game.gameGrid)
     printUnplacedShips
     printInputCommands
   }
@@ -78,23 +74,23 @@ class TUI(val controller:GameController) extends Observer { // extends IView
 
   private def columnSumRow(g:IGrid) = {
     var sums = ""
-    for (x <- 0 until model.gameGrid.size) {
+    for (x <- 0 until Model.game.gameGrid.size) {
       sums += (getColoredColumnSum(x, g.getColumnSum(x)) + " ")
     }
     sums
   }
   
   private def getColoredRowSum(row:Int, sum:Int) = {
-    if (model.getUnplacedShips.isEmpty) {
-      if (model.validateRowSum(row)) colorGreen(sum.toString) // FIXME: Validation
+    if (Model.game.getUnplacedShips.isEmpty) {
+      if (Model.game.validateRowSum(row)) colorGreen(sum.toString) // FIXME: Validation
       else colorRed(sum.toString)
     }
     else sum.toString
   }
 
   private def getColoredColumnSum(col:Int, sum:Int) = {
-    if (model.getUnplacedShips.isEmpty) {
-      if (model.validateColumnSum(col)) colorGreen(sum.toString) // FIXME: Validation
+    if (Model.game.getUnplacedShips.isEmpty) {
+      if (Model.game.validateColumnSum(col)) colorGreen(sum.toString) // FIXME: Validation
       else colorRed(sum.toString)
     }
     else sum.toString
@@ -112,7 +108,7 @@ class TUI(val controller:GameController) extends Observer { // extends IView
   */
   private def printUnplacedShips {
     var output = "## Unplaced ships"
-    var ships:List[Ship] = model.getUnplacedShips
+    var ships:List[Ship] = Model.game.getUnplacedShips
     var tmpSize = 0
     for (s <- ships) {
       if (tmpSize != s.size){ 

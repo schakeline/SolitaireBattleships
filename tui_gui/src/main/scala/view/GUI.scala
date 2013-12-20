@@ -9,8 +9,8 @@ import scala.swing.event.ButtonClicked
 import com.sun.java.util.jar.pack.Package
 
 class GUI(controller:GameController) extends swing.Frame with Observer{
-  var model = controller.model
-  model.add(this)
+  var model:Game = Model.game
+  Model.add(this)
   
   val TextFieldSize = new TextField("5")
   val ButtonNewGame = new Button("New Game")
@@ -187,7 +187,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
   def placeShip(x:Int,y:Int):Unit = {
     if(selected < 0)
       throw new IllegalArgumentException()
-    val theShip = model.ships.filter(p => p.id == selected)
+    val theShip = model.getShipWithID(selected)
     
     val size:Int = model.gridSize
     
@@ -206,13 +206,13 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     	//vertical ship
     	if(startPos._1 == x){
     		val length = Math.abs(startPos._2 - y) +1
-    		if(length != theShip(0).size) state.text = ("lenght not matching")
+    		if(length != theShip.size) state.text = ("lenght not matching")
     		or = de.htwg.scala.solitairebattleship.util.Orientation.Vertical
     	}
     	//horizontal ship
     	else if ( startPos._2 == y) {
     		val length = Math.abs(startPos._1 - x)+1
-    		if(length != theShip(0).size) state.text = ("lenght not matching")
+    		if(length != theShip.size) state.text = ("lenght not matching")
     		or = de.htwg.scala.solitairebattleship.util.Orientation.Horizontal
     	}
     	else {
@@ -227,7 +227,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     	if(startPos._2 > y) tmpY = x
     	
     	
-    	model.placeShip(theShip(0), tmpX, tmpY, or)
+    	model.placeShip(theShip, tmpX, tmpY, or)
     	state.text = "ship Placed x:" + x + " y:"  + y +" Orientation:"+ or
     	startPos = (-1,-1)
     }

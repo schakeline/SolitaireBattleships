@@ -19,7 +19,9 @@ private val gridArray = Array.ofDim[Ship](size, size)
     if (theShip == null) throw new IllegalArgumentException
     if (x < 0 || x >= size || y < 0 || y >= size) throw new IndexOutOfBoundsException
     
-    removeShip(theShip)
+    val newGrid = this.copy()
+
+    newGrid.removeShip(theShip)
     
     // List with cells occupied by ship
     var fields = (x, y) :: Nil
@@ -29,14 +31,14 @@ private val gridArray = Array.ofDim[Ship](size, size)
       else fields = (x, y+i) :: fields
     }
     
-    if (!cellInGrid(fields(0)))
+    if (!newGrid.cellInGrid(fields(0)))
       throw new ShipCollisionException("With border.")
-    else if (!cellsFree(fields))
+    else if (!newGrid.cellsFree(fields))
       throw new ShipCollisionException("With another ship.")
     else
-      fields.foreach(f => gridArray(f._2)(f._1) = theShip)
+      fields.foreach(f => newGrid.gridArray(f._2)(f._1) = theShip)
 
-    this.copy()
+    newGrid
   }
   
   private def cellInGrid(cell:Tuple2[Int, Int]):Boolean = (cell._1 >= 0 && cell._1 < size && cell._2 >= 0 && cell._2 < size)
@@ -45,11 +47,14 @@ private val gridArray = Array.ofDim[Ship](size, size)
     
   def removeShip(ship:Ship):Grid = {
     if (ship == null) throw new IllegalArgumentException
-    for (y <- 0 until size; x <- 0 until size) { 
-    if(gridArray(y)(x) == ship)
-      gridArray(y)(x) = null
+    
+    val newGrid = this.copy()
+
+    for (y <- 0 until newGrid.size; x <- 0 until newGrid.size) { 
+    if(newGrid.gridArray(y)(x) == ship)
+      newGrid.gridArray(y)(x) = null
     }
-    this.copy()
+    newGrid
   }
       
   def getRowSum(row:Int):Int = {
