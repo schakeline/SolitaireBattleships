@@ -7,7 +7,6 @@ class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
     
   def gridSize = solution.size
   private var userGrid:Grid = new Grid(gridSize)
-  
 
   /**
    * Returns the grid which should be shown the user to play the game.

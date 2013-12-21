@@ -5,7 +5,7 @@ import de.htwg.scala.solitairebattleship.util.Orientation._
 import de.htwg.scala.solitairebattleship.util.Position
 
 
-case class Grid (val size:Int) extends IGrid {
+class Grid (val size:Int) extends IGrid {
 private val gridArray = Array.ofDim[Ship](size, size)
   
   if (size < 2) throw new IllegalArgumentException
@@ -79,6 +79,15 @@ private val gridArray = Array.ofDim[Ship](size, size)
     gridArray(y)(x)
   }
 
+  def copy():Grid = {
+    var nGrid = new Grid(size)
+    for(x <- 0 until size; y <- 0 until size)
+      nGrid.gridArray(x)(y) = this.gridArray(x)(y)
+    
+    nGrid
+  }
+  
   def getRow(r:Int):List[Ship] = gridArray(r).toList
   
+ 
 }

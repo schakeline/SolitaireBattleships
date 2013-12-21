@@ -17,8 +17,6 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
   val ButtonShowSolution = new Button("Show Solution")
   val ButtonEndGame = new Button("Exit")
   val state = new Label("")
-
-  var curGrid:IGrid = null;
   
   var selected = -1;
   var startPos:Tuple2[Int,Int] = (-1,-1) 
@@ -35,12 +33,10 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
       		val s:Int = TextFieldSize.text.toInt
       		state.text = "new Game with size: " + s      		      		
       		controller.newGame(s)  
-      		curGrid = model.gameGrid;
       		update //need to Update manual because selecting the curGrid is not a change in the model
       	}
       	case ButtonClicked(ButtonShowSolution) => {
       		state.text = "ShowSolution"
-      		curGrid = model.solution;
       		update //need to Update again, because now "curGrid" is set
       	}
       	case ButtonClicked(ButtonEndGame) => {
@@ -51,24 +47,20 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     
   
   def update = {
+    model = Model.game
     contents = controlPanel
   }
   
-  def gridField(grid:IGrid):GridPanel = {
-    if(grid == null)
-    {
-      return new GridPanel(1,1)
-    }
+  def gridField():GridPanel = {
+    if(model.gameGrid == null) return new GridPanel(1,1)
     
-
-        
-    val s:Int = grid.size
+    val s:Int = model.gameGrid.size
     
     var gPanel = new GridPanel(s + 2,s +2){
       preferredSize = new Dimension(400,400)
       
-      for(x <- 0 to s + 1; y <- 0 to s + 1){
-        if(x == 0 && y == 0){ contents += emptyField }
+      for (y <- 0 to s + 1; x <- 0 to s + 1){
+        if (x == 0 && y == 0){ contents += emptyField }
         else if (x == 0 && y == s + 1) {contents += emptyField}
         else if (y == 0 && x == s + 1) {contents += emptyField}
         else if (x== s+1  && y == s+1) {contents += emptyField}
@@ -76,7 +68,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
         else if (y == s + 1) {contents += clmSumField(x -1)}
         else if (x == 0) contents += lineLabel((y - 1))
         else if (y == 0) contents += lineLabel((x - 1))
-        else { 	contents += cell(x-1,y-1, grid) 	} 
+        else { 	contents += cell(y-1,x-1, model.gameGrid) 	} 
           
         }
       }
@@ -94,21 +86,19 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     			contents += ButtonEndGame
     		} ,swing.BorderPanel.Position.North)
     		
-    		add(gridField(curGrid), BorderPanel.Position.Center)
-    		
-    		add(shipPanel,BorderPanel.Position.West)
-    		
+        if(model != null){
+          add(gridField, BorderPanel.Position.Center)
+          add(shipPanel,BorderPanel.Position.West)
+    		}
     		add(state, BorderPanel.Position.South)
     	}   
   
     }
   
   def shipPanel:GridPanel = {
-    
     val ships = model.getUnplacedShips
     
-    if(ships.isEmpty == false)
-    {
+    if(ships.isEmpty == false){
 	    val max = (ships.maxBy(_.size)).size
 	    val lines = ships.length * 2 +1
 	    val gui = this
@@ -117,36 +107,31 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
 	      preferredSize = new Dimension(100,300)
 	      maximumSize = new Dimension(100,300)
 	      minimumSize =new Dimension(100,300)
-	      for(y <- 0 until lines )
-	      {
-	        for(x <-0 until max)
-	        {         
-	          if(y % 2 == 1) {
-	        	  if(x < ships(y/2).size)  {
-	        	    val id = ships(y/2).id
-	        	    val s = new ShipSelection(id, gui)
-	        	    contents += s
-	        	    listenTo(s)
-	        	  }
-	        	  else contents += new Label()
+	      for(y <- 0 until lines; x <-0 until max){         
+          if(y % 2 == 1) {
+	          if(x < ships(y/2).size)  {
+	            val id = ships(y/2).id
+	            val s = new ShipSelection(id, gui)
+	            contents += s
+	            listenTo(s)
 	          }
 	          else contents += new Label()
-	          
 	        }
+	        else contents += new Label()
 	      }
 	    }
 	    gPanel
     }
     else {
       
-      if(curGrid != null){
+    //FIXME: Validate the game
     	val clm = Validator.validateColumnSums(model.gameGrid, model.solution)
     	val row = Validator.validateRowSums(model.gameGrid, model.solution)
       
-      	if(clm.isEmpty && row.isEmpty)
-    	  state.text = "congratulation!"
-        else state.text = "wrong!"
-      }
+    	if (clm.isEmpty && row.isEmpty)
+        state.text = "congratulation!"
+      else state.text = "wrong!"
+      
       new GridPanel(1,1)
     }
   }
@@ -185,14 +170,13 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
   
   
   def placeShip(x:Int,y:Int):Unit = {
-    if(selected < 0)
+    if (selected < 0)
       throw new IllegalArgumentException()
     val theShip = model.getShipWithID(selected)
     
     val size:Int = model.gridSize
     
-    if(startPos._1 < 0 || startPos._1 > size || startPos._2 < 0 || startPos._2 > size)
-    {
+    if (startPos._1 < 0 || startPos._1 > size || startPos._2 < 0 || startPos._2 > size){
     	state.text = "1. click x: " + x +" y: " + y
     	startPos = (x,y)
     }
@@ -204,7 +188,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     	var or = de.htwg.scala.solitairebattleship.util.Orientation.Horizontal  
     	
     	//vertical ship
-    	if(startPos._1 == x){
+    	if (startPos._1 == x){
     		val length = Math.abs(startPos._2 - y) +1
     		if(length != theShip.size) state.text = ("lenght not matching")
     		or = de.htwg.scala.solitairebattleship.util.Orientation.Vertical
