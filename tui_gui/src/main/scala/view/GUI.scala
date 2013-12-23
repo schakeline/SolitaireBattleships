@@ -3,7 +3,7 @@ package de.htwg.scala.solitairebattleship.view
 import de.htwg.scala.solitairebattleship.controller._
 import de.htwg.scala.solitairebattleship.model._
 import de.htwg.scala.solitairebattleship.util.Observer
-import de.htwg.scala.solitairebattleship.util._
+import de.htwg.scala.solitairebattleship.util.Orientation
 import scala.swing._
 import scala.swing.event.ButtonClicked
 import com.sun.java.util.jar.pack.Package
@@ -166,15 +166,13 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
   }
   
   def selectShip(id:Int) = {
+    state.text = "ship selected: " + id
     selected = id
   }
   
   
   def placeShip(x:Int,y:Int):Unit = {
-    if (selected < 0)
-      throw new IllegalArgumentException()
     val theShip = model.getShipWithID(selected)
-    
     val size:Int = model.gridSize
     
     if (startPos._1 < 0 || startPos._1 > size || startPos._2 < 0 || startPos._2 > size){
@@ -186,20 +184,27 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     		throw new IllegalArgumentException()
     	state.text = "2. click x: " + x +" y: " + y
     	
-    	var or = de.htwg.scala.solitairebattleship.util.Orientation.Horizontal  
+    	var or = Orientation.Horizontal  
     	
     	//vertical ship
     	if (startPos._1 == x){
     		val length = Math.abs(startPos._2 - y) +1
-    		if(length != theShip.size) state.text = ("lenght not matching")
-    		or = de.htwg.scala.solitairebattleship.util.Orientation.Vertical
+    		if (length != theShip.size) {
+          state.text = ("length not matching")
+          return 
+        }
+    		or = Orientation.Vertical
     	}
     	//horizontal ship
     	else if ( startPos._2 == y) {
     		val length = Math.abs(startPos._1 - x)+1
-    		if(length != theShip.size) state.text = ("lenght not matching")
-    		or = de.htwg.scala.solitairebattleship.util.Orientation.Horizontal
+    		if (length != theShip.size) {
+          state.text = ("length not matching")
+          return
+        }
+    		or = Orientation.Horizontal
     	}
+      //user tried to place diagonal
     	else {
     	  state.text = "not a valid position"
     	  startPos = (-1,-1)
@@ -208,9 +213,8 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     	
     	var tmpX = startPos._1
     	var tmpY = startPos._2
-    	if(startPos._1 > x) tmpX = x
-    	if(startPos._2 > y) tmpY = x
-    	
+    	if (startPos._1 > x) tmpX = x
+    	if (startPos._2 > y) tmpY = x
     	
     	model.placeShip(theShip, tmpX, tmpY, or)
     	state.text = "ship Placed x:" + x + " y:"  + y +" Orientation:"+ or
@@ -218,5 +222,6 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     }
       
   }
+  
   
 } //class

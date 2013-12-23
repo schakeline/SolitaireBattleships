@@ -1,4 +1,4 @@
-package de.htwg.scala.solitairebattleship.controller
+package de.htwg.scala.solitairebattleship.model
 
 import de.htwg.scala.solitairebattleship.model._
 
@@ -9,7 +9,7 @@ object Validator {
     
     var collisions:List[Tuple2[Int,Int]] = Nil 
     
-    for(x <- 0 until theGrid.size; y <- 0 until theGrid.size){
+    for (x <- 0 until theGrid.size; y <- 0 until theGrid.size){
       var hotSpot = theGrid.getCell(x,y)
              
       if (hotSpot != null){
@@ -40,8 +40,7 @@ object Validator {
           if (CollisionBetween(hotSpot,southWestNeighbor)){
             collisions = (x,y) :: (x-1,y+1) :: collisions
           }
-        }
-       
+        }    
       }
     }
     return collisions
@@ -53,7 +52,7 @@ object Validator {
   }
   
   // FIXME: validation not working because userGrid returns not the real rowSum
-  def validateRowSums(userGrid:IGrid, refGrid:IGrid):List[Int] = {
+  /*def validateRowSums(userGrid:IGrid, refGrid:IGrid):List[Int] = {
     
     var result:List[Int] = Nil
 
@@ -75,6 +74,6 @@ object Validator {
       }
     }
     result
-  }
+  }*/
 
 }

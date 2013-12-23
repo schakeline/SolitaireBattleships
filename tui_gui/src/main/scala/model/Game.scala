@@ -62,4 +62,5 @@ class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
   def getShipWithID(theID:Int):Ship = ships.find(p => p.id == theID).get
   def validateRowSum(r:Int) = {userGrid.getRowSum(r) == solution.getRowSum(r)}
   def validateColumnSum(c:Int) = {userGrid.getColumnSum(c) == solution.getColumnSum(c)}
+  def getCollisions():List[Tuple2[Int,Int]] = {Validator.validateNeighborhood(userGrid)}
 }

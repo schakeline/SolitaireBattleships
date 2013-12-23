@@ -19,9 +19,8 @@ private val gridArray = Array.ofDim[Ship](size, size)
     if (theShip == null) throw new IllegalArgumentException
     if (x < 0 || x >= size || y < 0 || y >= size) throw new IndexOutOfBoundsException
     
-    val newGrid = this.copy()
-
-    newGrid.removeShip(theShip)
+    var newGrid = this.copy()
+    newGrid = newGrid.removeShip(theShip)
     
     // List with cells occupied by ship
     var fields = (x, y) :: Nil
