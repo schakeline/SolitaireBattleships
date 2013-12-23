@@ -33,7 +33,8 @@ class GameController {
 
     // FIXME: Validation 2nd if-block not working
     if (Model.game.getUnplacedShips.isEmpty) {
-      if (Validator.validateNeighborhood(Model.game.gameGrid))
+      if (Validator.validateNeighborhood(Model.game.gameGrid).isEmpty)
+        println("no collisions")
     
       Validator.validateRowSums(Model.game.gameGrid, Model.game.solution).foreach(r => print(r))
 

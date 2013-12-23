@@ -59,13 +59,13 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     var gPanel = new GridPanel(s + 2,s +2){
       preferredSize = new Dimension(400,400)
       
-      for (y <- 0 to s + 1; x <- 0 to s + 1){
+      for (x <- 0 to s + 1; y <- 0 to s + 1){
         if (x == 0 && y == 0){ contents += emptyField }
         else if (x == 0 && y == s + 1) {contents += emptyField}
         else if (y == 0 && x == s + 1) {contents += emptyField}
         else if (x== s+1  && y == s+1) {contents += emptyField}
-        else if (x == s + 1) {contents += rowSumField(y -1)}
-        else if (y == s + 1) {contents += clmSumField(x -1)}
+        else if (y == s + 1) {contents += rowSumField(x -1)}
+        else if (x == s + 1) {contents += clmSumField(y -1)}
         else if (x == 0) contents += lineLabel((y - 1))
         else if (y == 0) contents += lineLabel((x - 1))
         else { 	contents += cell(y-1,x-1, model.gameGrid) 	} 
@@ -79,7 +79,6 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
   		new swing.BorderPanel{
     		add(new swing.GridPanel(1,3)
     		{	
-    			preferredSize = new Dimension(600,40)
     			contents += TextFieldSize
     			contents += ButtonNewGame
     			contents += ButtonShowSolution
@@ -99,17 +98,20 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
     val ships = model.getUnplacedShips
     
     if(ships.isEmpty == false){
+      val width = 100
+      val height = 400
 	    val max = (ships.maxBy(_.size)).size
-	    val lines = ships.length * 2 +1
+      val cellSize = width / max
+	    val lines = height / cellSize
+      //ships.length * 2 +1
 	    val gui = this
-	    
+	    println("max: " + max + " lines: " +lines)
 	    var gPanel = new GridPanel(lines, max){
-	      preferredSize = new Dimension(100,300)
-	      maximumSize = new Dimension(100,300)
-	      minimumSize =new Dimension(100,300)
-	      for(y <- 0 until lines; x <-0 until max){         
-          if(y % 2 == 1) {
-	          if(x < ships(y/2).size)  {
+	      preferredSize = new Dimension(width, height)
+        
+	      for (y <- 0 until lines; x <-0 until max){         
+          if (y % 2 == 1 && (y /2) < ships.size) {
+	          if (x < ships(y/2).size)  {
 	            val id = ships(y/2).id
 	            val s = new ShipSelection(id, gui)
 	            contents += s
@@ -122,16 +124,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
 	    }
 	    gPanel
     }
-    else {
-      
-    //FIXME: Validate the game
-    	val clm = Validator.validateColumnSums(model.gameGrid, model.solution)
-    	val row = Validator.validateRowSums(model.gameGrid, model.solution)
-      
-    	if (clm.isEmpty && row.isEmpty)
-        state.text = "congratulation!"
-      else state.text = "wrong!"
-      
+    else {      
       new GridPanel(1,1)
     }
   }
@@ -139,17 +132,25 @@ class GUI(controller:GameController) extends swing.Frame with Observer{
   
   private def emptyField = {new Label(){background = java.awt.Color.WHITE}}
   
-  private def clmSumField(column:Int) = {
+  private def clmSumField(column:Int) = { 
     new Label(model.solution.getColumnSum(column).toString){
-          	horizontalAlignment = Alignment.Center
-          	verticalAlignment = Alignment.Center
+        horizontalAlignment = Alignment.Center
+        verticalAlignment = Alignment.Center
+        if (Model.game.getUnplacedShips.isEmpty){
+          if (Model.game.validateColumnSum(column)) foreground = java.awt.Color.GREEN
+          else foreground = java.awt.Color.RED
+        }
     	}
     }
   
   private def rowSumField(row:Int) = {
     new Label(model.solution.getRowSum(row).toString ){
-    	horizontalAlignment = Alignment.Center
-    	verticalAlignment = Alignment.Center
+        horizontalAlignment = Alignment.Center
+        verticalAlignment = Alignment.Center
+        if (Model.game.getUnplacedShips.isEmpty){
+          if (Model.game.validateRowSum(row)) foreground = java.awt.Color.GREEN
+          else foreground = java.awt.Color.RED
+        }
     	}
     }
   

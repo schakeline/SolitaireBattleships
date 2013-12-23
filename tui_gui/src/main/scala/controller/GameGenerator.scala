@@ -81,7 +81,7 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
           //the Cell is empty so place the ship
           tmpGrid = tmpGrid.placeShip(theShip, pos)         
             
-          if (Validator.validateNeighborhood(tmpGrid) == false){
+          if (Validator.validateNeighborhood(tmpGrid).isEmpty == false){
             //Bad Neighborhood, we need to remove the ship
             tmpGrid = tmpGrid.removeShip(theShip)
             tmpIDs = shipIDs
