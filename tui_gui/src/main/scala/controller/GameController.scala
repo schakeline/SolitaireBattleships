@@ -43,4 +43,9 @@ class GameController {
     Model.game.removeShip(ship) // throws exception if no ship found
   }
 
+  def showSolution {
+    views.foreach(v => v.showSolution)
+    Model.game = null
+  }
+
 }

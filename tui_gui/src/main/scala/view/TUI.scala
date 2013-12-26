@@ -27,6 +27,12 @@ class TUI(val controller:GameController) extends Observer with IView {
     printInfo(inputCommands)
   }
 
+  def showSolution {
+    println(colorYellow("\n- - - SOLUTION - - -\n"))
+    printGrid(Model.game.solution)
+    println("")
+  }
+
   def update {
     if (Model.game != null) {
       printGrid(Model.game.gameGrid)
@@ -146,7 +152,7 @@ class TUI(val controller:GameController) extends Observer with IView {
     try {
       input match {
       case "Q" => continue = false
-      //case "S" => printSolution
+      case "S" => controller.showSolution
       case x if (x.matches("N [0-9]{1,2}")) => {
         controller.newGame(x.slice(2,x.length).toInt)
       }
