@@ -1,56 +1,46 @@
 package de.htwg.scala.solitairebattleship.controller
 
+import scala.collection.immutable.ListSet
+import de.htwg.scala.solitairebattleship.view.IView
 import de.htwg.scala.solitairebattleship.model._
 import de.htwg.scala.solitairebattleship.util.Orientation._
 
+
 class GameController {
 
-  /*private var _model:IGame = new Game
-  private def model_=(model:IGame) {_model = model}
-  def model = _model
-  */
+  private var views:ListSet[IView] = new ListSet()
+  def registerView(theView:IView) {views = views + theView}
+  def unregisterView(theView:IView) {views = views - theView}
+
   def newGame(gridSize:Int = 10) {
-    
-    val ships:List[Ship] = ShipFactory.getShips(gridSize)
-    val grid = new GameGenerator(ships, gridSize).generateGrid
-    
-    Model.game = new Game(ships, grid)
+    if (gridSize < 3 || gridSize > 10) {
+      throw new IllegalArgumentException()
+    } else {
+      val ships:List[Ship] = ShipFactory.getShips(gridSize)
+      val grid = new GameGenerator(ships, gridSize).generateGrid
+      Model.game = new Game(ships, grid)
+    }
   }
 
   def placeShip(id:Int, x:Int, y:Int, orientation:Orientation) {
-    try {
-      // get ship
-      var ship = Model.game.getShipWithID(id) // return type is Option[Ship]
-      Model.game.placeShip(ship, x, y, orientation) // throws exception if no ship found
-    } catch {
-      case e:Exception => println("ERROR")// FIXME: view.showError(e)
-    }
-
-
-    // catch exceptions and pass to ui
-    // if all ships are placed validate game
-    // call uis error method
-
-    // FIXME: Validation 2nd if-block not working
-    // is a Validation usefull here? 
-    /*if (Model.game.getUnplacedShips.isEmpty) {
-      if (Validator.validateNeighborhood(Model.game.gameGrid).isEmpty)
-        println("no collisions")
+    // get ship
+    var ship = Model.game.getShipWithID(id) // return type is Option[Ship]
+    Model.game.placeShip(ship, x, y, orientation) // throws exception if no ship found
     
-      Validator.validateRowSums(Model.game.gameGrid, Model.game.solution).foreach(r => print(r))
-
-      Validator.validateColumnSums(Model.game.gameGrid, Model.game.solution).foreach(c => print(c))
-    }*/
+    if (Model.game.getUnplacedShips.isEmpty) {
+      // check if valid
+      if (Model.game.isValid) {
+        views.foreach(v => v.showGameFinished)
+        Model.game = null
+      }
+      else views.foreach(v => v.showValidationResult)
+    }
   }
 
   def removeShip(id:Int) {
-    try {
-      // get ship
-      var ship = Model.game.getShipWithID(id) // return type is Option[Ship]
-      Model.game.removeShip(ship) // throws exception if no ship found
-    } catch {
-      case e:Exception => println("ERROR")//FIXME: view.showError(e)
-    }
+    // get ship
+    var ship = Model.game.getShipWithID(id) // return type is Option[Ship]
+    Model.game.removeShip(ship) // throws exception if no ship found
   }
 
 }

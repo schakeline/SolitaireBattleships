@@ -43,7 +43,7 @@ object Validator {
         }    
       }
     }
-    return collisions
+    collisions
   }
 
   private def CollisionBetween(hotspot:Ship, neighbor:Ship):Boolean = {
@@ -51,29 +51,4 @@ object Validator {
     else false
   }
   
-  // FIXME: validation not working because userGrid returns not the real rowSum
-  /*def validateRowSums(userGrid:IGrid, refGrid:IGrid):List[Int] = {
-    
-    var result:List[Int] = Nil
-
-    for (y <- 0 until userGrid.size) {
-      if (userGrid.getRowSum(y) != refGrid.getRowSum(y)) {
-        result = result :+ y
-      }
-    }
-    result
-  }
-
-  // FIXME: validation not working because userGrid returns not the real columnSum
-  def validateColumnSums(userGrid:IGrid, refGrid:IGrid):List[Int] = {
-    var result:List[Int] = Nil
-
-    for (x <- 0 until userGrid.size) {
-      if (userGrid.getColumnSum(x) != refGrid.getColumnSum(x)) {
-        result = result :+ x
-      }
-    }
-    result
-  }*/
-
 }

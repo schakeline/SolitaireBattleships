@@ -5,41 +5,51 @@ import de.htwg.scala.solitairebattleship.controller.GameController
 import de.htwg.scala.solitairebattleship.model._
 import de.htwg.scala.solitairebattleship.util.Orientation._
 import java.lang.NumberFormatException
+import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
 
-class TUI(val controller:GameController) extends Observer { // extends IView
-  // listenTo model
-  Model.add(this)
-  askForGridSize
+class TUI(val controller:GameController) extends Observer with IView {
+
+  private val askForGridSize = "Please enter: n <size [3, 10]> [new game], q [quit]."
+  private val inputCommands = "Enter q [quit], n <size [3,10]> [new game], s [show solution], mv <id> <y> <x> <orientation> [move ship], rm <id> [remove ship]"
+  
+  Model.add(this) // listen to model
+  controller.registerView(this) // register view
+  printTitle
+  update
   
 
-  def update {
-    printTUI
+  def showGameFinished {
+    printGrid(Model.game.gameGrid, true)
+    printGratualtion
+  }
+  def showValidationResult {
+    printGrid(Model.game.gameGrid, true)
+    printInfo(inputCommands)
   }
 
-  private def printTUI {
-    printGrid(Model.game.gameGrid)
-    printUnplacedShips
-    printInputCommands
+  def update {
+    if (Model.game != null) {
+      printGrid(Model.game.gameGrid)
+      printUnplacedShips
+      printInfo(inputCommands)
+    } else {
+      printInfo(askForGridSize)
+    }
   }
 
   /*
-      A B C D E F G H I
-    A|~|~|~|~|~|~|~|~|~|0
-    B|1|~|2|2|~|~|~|+|+|3
-    C|1|~|~|~|~|~|~|~|~|1
-    D|~|~|3|3|3|3|~|~|~|4
-    E|~|~|~|~|~|~|~|~|~|4
-    F|~|~|~|~|~|~|~|~|~|4
-    G|~|~|4|4|4|4|~|~|~|4
-    H|~|~|~|~|~|~|~|~|~|4
-    I|~|~|5|5|5|5|~|~|~|4
-      2 0 2 2 1 1 0 1 1
+      A B C D 
+    A|2|~|1|~|2
+    B|~|~|~|~|0
+    C|~|~|0|~|1
+    D|~|~|0|~|1
+      1 0 3 0 
    */
-  private def printGrid(g:IGrid) {
+  private def printGrid(g:IGrid, showValidation:Boolean = false) {
     
     var gridStr = "  " + fieldIndexRow(g.size) + "\n"
-    gridStr += gridRows(g)
-    gridStr += "  " + columnSumRow(g)
+    gridStr += gridRows(g, showValidation)
+    gridStr += "  " + columnSumRow(g, showValidation)
     
     println(gridStr)
   }
@@ -52,7 +62,11 @@ class TUI(val controller:GameController) extends Observer { // extends IView
     labels
   }
 
-  private def gridRows(g:IGrid) = {
+  private def gridRows(g:IGrid, showValidation:Boolean) = {
+    
+    var collisions:List[Tuple2[Int,Int]] = Nil
+    if (showValidation) collisions = Model.game.getCollisions
+
     var rows = ""
     var size = g.size
     for (y <- 0 until size) {
@@ -60,10 +74,12 @@ class TUI(val controller:GameController) extends Observer { // extends IView
         var field:String =
           x match {
           case 0 => ((y+65).toChar + "|")
-          case x if (x == size+1) => getColoredRowSum(y, g.getRowSum(y)) + "\n"
+          case x if (x == size+1) => getColoredRowSum(y, g.getRowSum(y), showValidation) + "\n"
           case _ => {
             var s:Ship = g.getCell(x-1, y)
-            if (s == null) "~|" else s.id+"|"
+            if (s == null) "~|"
+            else if (collisions.contains((x-1,y))) colorRed(s.id.toString) + "|"
+            else s.id + "|"
           }
         }
         rows += field
@@ -72,32 +88,29 @@ class TUI(val controller:GameController) extends Observer { // extends IView
     rows
   }
 
-  private def columnSumRow(g:IGrid) = {
+  private def columnSumRow(g:IGrid, showValidation:Boolean) = {
     var sums = ""
     for (x <- 0 until Model.game.gameGrid.size) {
-      sums += (getColoredColumnSum(x, g.getColumnSum(x)) + " ")
+      sums += (getColoredColumnSum(x, g.getColumnSum(x), showValidation) + " ")
     }
     sums
   }
   
-  private def getColoredRowSum(row:Int, sum:Int) = {
-    if (Model.game.getUnplacedShips.isEmpty) {
-      if (Model.game.validateRowSum(row)) colorGreen(sum.toString) // FIXME: Validation
+  private def getColoredRowSum(row:Int, sum:Int, showValidation:Boolean) = {
+    if (showValidation) {
+      if (Model.game.validateRowSum(row)) colorGreen(sum.toString)
       else colorRed(sum.toString)
     }
     else sum.toString
   }
 
-  private def getColoredColumnSum(col:Int, sum:Int) = {
-    if (Model.game.getUnplacedShips.isEmpty) {
-      if (Model.game.validateColumnSum(col)) colorGreen(sum.toString) // FIXME: Validation
+  private def getColoredColumnSum(col:Int, sum:Int, showValidation:Boolean) = {
+    if (showValidation) {
+      if (Model.game.validateColumnSum(col)) colorGreen(sum.toString)
       else colorRed(sum.toString)
     }
     else sum.toString
   }
-
-  private def colorRed(s:String) = {Console.RED + s + Console.RESET}
-  private def colorGreen(s:String) = {Console.GREEN + s + Console.RESET}
 
   /*
   ## Unplaced ships
@@ -123,22 +136,23 @@ class TUI(val controller:GameController) extends Observer { // extends IView
     println(output)
   }
 
-  private def printInputCommands {
-    println("Enter q [quit], n [new game], v [validate game]" +
-      "mv <id> <y> <x> <orientation> [move ship], rm <id> [remove ship]")
-  }
+  
 
   def processUserInput(in:String) = {
     var continue = true
 
     var input = in.toUpperCase
 
-    input match {
+    try {
+      input match {
       case "Q" => continue = false
-      case "V" => println("controller.validate")
-      case "N" => askForGridSize
+      //case "S" => printSolution
+      case x if (x.matches("N [0-9]{1,2}")) => {
+        controller.newGame(x.slice(2,x.length).toInt)
+      }
       case _ => {
-        input.toList.filter(c => c != ' ') match {
+        if (Model.game != null) {
+          input.toList.filter(c => c != ' ') match {
           case 'M' :: 'V' :: ship :: column :: row :: orientation :: Nil => {
             controller.placeShip( (ship.toInt - '0'.toInt),
               (row.toInt - 'A'.toInt),
@@ -148,42 +162,40 @@ class TUI(val controller:GameController) extends Observer { // extends IView
           case 'R' :: 'M' :: ship :: Nil => {
             controller.removeShip(ship.toInt - '0'.toInt)
           }
-          case _ => println("Wrong Input!")
+          case _ => printError("Wrong Input!")
+          }
+        } else {
+        printError(askForGridSize)
         }
       }
+      }
+    } catch {
+      case e:IllegalArgumentException =>
+        printError("Illegal argument")
+      case e:IndexOutOfBoundsException =>
+        printError("Index out of bounds.")
+      case e:ShipCollisionException =>
+        printError("ShipCollition: " + e.getMessage)
     }
+
     continue
   }
 
-  private def askForGridSize = {
-    printTitle
-    println("Please enter the desired gird size [3, 10].")
-    
-    var in:String = null;
-    do {
-      print(Console.BLUE + "> " + Console.RESET)
-      in = readLine()
-      var gSize = -1
-      try {
-        gSize = in.toInt
-        gSize match {
-        case x:Int if (x > 1 && x < 11) => controller.newGame(gSize)
-        case _ => {
-          println("Wrong Input!")
-          in = null
-        }
-        }
-      } catch {
-        case e:NumberFormatException =>
-        println("[ERROR] Entered string is not a number.")
-        in = null
-      }
 
-    } while (in == null)
-  }
+  private def printError(msg:String) { println(colorRed("[ERROR] ") + msg) }
+  private def printInfo(msg:String) { println(colorBlue("[INFO] ") + msg) }
 
   private def printTitle {
-    scala.io.Source.fromURL(getClass.getResource("/title.txt")).getLines.foreach(s => println(Console.YELLOW+s+Console.RESET))    
+    scala.io.Source.fromURL(getClass.getResource("/title.txt")).getLines.foreach(s => println(colorYellow(s)))    
   }
+
+  private def printGratualtion {
+    scala.io.Source.fromURL(getClass.getResource("/gratulation.txt")).getLines.foreach(s => println(colorGreen(s)))    
+  }
+
+  private def colorRed(s:String) = {Console.RED + s + Console.RESET}
+  private def colorGreen(s:String) = {Console.GREEN + s + Console.RESET}
+  private def colorYellow(s:String) = {Console.YELLOW + s + Console.RESET}
+  private def colorBlue(s:String) = {Console.BLUE + s + Console.RESET}
 
 }

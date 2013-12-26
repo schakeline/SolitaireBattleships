@@ -60,7 +60,19 @@ class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
   }
 
   def getShipWithID(theID:Int):Ship = ships.find(p => p.id == theID).get
-  def validateRowSum(r:Int) = {userGrid.getRowSum(r) == solution.getRowSum(r)}
-  def validateColumnSum(c:Int) = {userGrid.getColumnSum(c) == solution.getColumnSum(c)}
+  
+  def isValid():Boolean = {
+    var valid:Boolean = getCollisions.isEmpty
+
+    if (valid) {
+      for (i <- 0 until gridSize) {
+        if ( !(validateRowSum(i) && validateColumnSum(i)) ) return false
+      }
+    }
+    valid
+  }
+
+  def validateRowSum(r:Int):Boolean = {userGrid.getRowSum(r) == solution.getRowSum(r)}
+  def validateColumnSum(c:Int):Boolean = {userGrid.getColumnSum(c) == solution.getColumnSum(c)}
   def getCollisions():List[Tuple2[Int,Int]] = {Validator.validateNeighborhood(userGrid)}
 }
