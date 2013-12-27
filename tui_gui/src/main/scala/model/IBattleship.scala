@@ -4,6 +4,9 @@ package de.htwg.scala.solitairebattleship.model
 
 
 trait IBattleship {
+
+def gridSize
+
 /*  
   def userGrid
   def userGrid_=(grid:Grid)

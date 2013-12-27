@@ -1,7 +1,14 @@
-@(message: String)
+@(newGameForm:Form[Int], gridSizes:List[String])
 
-@main("Welcome to Play") {
+@import helper._
 
-    @play20.welcome(message)
+@main("Solitaire Battleship") {
+
+    <h1>New Game</h1>
+    @form(routes.Application.playGame) {
+      @select( newGameForm("size"), options(gridSizes) )
+
+      <input type="submit" value="Play!"/>
+    }
 
 }

@@ -1,0 +1,79 @@
+@(model:de.htwg.scala.solitairebattleship.model.Battleship, placeShipForm:Form[PlaceShipData])
+
+@import de.htwg.scala.solitairebattleship.model.Battleship
+@import de.htwg.scala.solitairebattleship.model.Ship
+@import helper._
+
+@main("Solitaire Battleship") {
+  <h1>Play Game</h1>
+
+  @grid
+  @unplacedShips
+  @hiddenForm
+}
+
+@grid = {
+    <table>
+    <tr>
+      <td>@(" ")</td>
+      @for(x <- 0 until model.userGrid.size) {
+        <td>@((x+65).toChar)</td>
+      }
+      <td>@(" ")</td>
+    </tr>
+
+    @for(y <- 0 until model.userGrid.size) {
+      <tr>
+        <td>@((y+65).toChar)</td>
+        @for(x <- 0 until model.userGrid.size) {
+          <td>
+            @{
+              val s:Ship = model.userGrid.getCell(x, y)
+              if(s == null) {
+                "~"
+              } else {
+                s.id.toString
+              }
+            }
+          </td>
+        }
+        <td>@(model.genGrid.getRowSum(y).toString)</td>
+      </tr>
+    }
+    <tr>
+      <td>@(" ")</td>
+      @for(x <- 0 until model.userGrid.size) {
+        <td>@(model.genGrid.getColumnSum(x))</td>
+      }
+      <td>@(" ")</td>
+    </tr>
+  </table>
+}
+
+@unplacedShips = {
+  <div>
+    @for(s <- model.getUnplacedShips) {
+      <div id="ship_+@(s.id.toString)" class="shipWithSize@(s.size.toString)">@(s.id.toString)</div>
+    }
+  </div>
+}
+
+  @unplacedShipIDs = {
+    var ships:List[String] = Nil
+    model.getUnplacedShips.foreach(s => ships = shipID :+ s.id.toString)
+    ships
+  }
+  
+  
+
+@hiddenForm = {
+  
+  @form(routes.Application.placeShip) {
+    @select( placeShipForm("id"), options(List("1", "2")) )
+    @select( placeShipForm("x"), options((0 to model.userGrid.size).map(i =>(i+65).toChar.toString).toList) )
+    @select( placeShipForm("y"), options((0 to model.userGrid.size).map(i =>(i+65).toChar.toString).toList) )
+    @select( placeShipForm("orientation"), options(List("Horizontal", "Vertical")) )
+
+    <input type="submit" value="Place Ship"/>
+  }
+}

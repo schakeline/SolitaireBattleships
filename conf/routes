@@ -5,5 +5,9 @@
 # Home page
 GET     /                           controllers.Application.index
 
+# Tasks
+GET     /playGame                   controllers.Application.playGame
+GET     /playGame/placeShip          controllers.Application.placeShip
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

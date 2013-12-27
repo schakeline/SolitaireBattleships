@@ -9,30 +9,9 @@ class GameController {
   def model = _model
 
   def newGame(gridSize:Int = 10) {
-    
-    // game generation code goes here
-    // TODO: generate game for size 
-
-    //model.genGrid = new Grid(gridSize)
-    //model.ships = dummyShips // (ship count <= 10 | 0 <= id < 10)!!!
     model.ships = ShipFactory.getShips(gridSize)
     model.genGrid = new GameGenerator(model.ships, gridSize).generateGrid
     model.userGrid = new Grid(gridSize)
-  }
-
-  // TODO: Delete fkt if generation is implemented !!!
-  private def dummyShips:List[Ship] = {
-    var ships:List[Ship] = Nil
-    for (i <- 0 until 10) {
-      var s = i match {
-        case x if x < 4 => 1
-        case x if x < 7 => 3
-        case x if x < 9 => 3
-        case _ => 4
-      }
-      ships = (new Ship(i, s)) :: ships
-    }
-    ships
   }
 
   def placeShip(id:Int, x:Int, y:Int, orientation:Orientation) {
