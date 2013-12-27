@@ -6,6 +6,7 @@ import play.api.data._
 import play.api.data.Forms._
 import de.htwg.scala.solitairebattleship.controller.GameController
 import de.htwg.scala.solitairebattleship.util.Orientation
+import de.htwg.scala.solitairebattleship.model.Model
 
 case class PlaceShipData(id: Int, x: String, y:String, orientation:String)
 
@@ -39,7 +40,7 @@ object Application extends Controller {
       size => {
         //Model create game
         gameController.newGame(size)
-        Ok( views.html.playGame(gameController.model, placeShipForm) )
+        Ok( views.html.playGame(Model.game, placeShipForm) )
       }
     )
   }
@@ -48,7 +49,7 @@ object Application extends Controller {
     implicit request =>
       placeShipForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(views.html.playGame(gameController.model, placeShipForm))
+          BadRequest(views.html.playGame(Model.game, placeShipForm))
         },
         placeShipData => {
           val orientation = if(placeShipData.orientation == "Horizontal") Orientation.Horizontal else Orientation.Vertical
@@ -56,7 +57,7 @@ object Application extends Controller {
           val y:Int = placeShipData.y(0).toInt-65
           gameController.placeShip(placeShipData.id, x, y, orientation)
           println("OK")
-          Ok( views.html.playGame(gameController.model, placeShipForm) )
+          Ok( views.html.playGame(Model.game, placeShipForm) )
         }
       )
   }

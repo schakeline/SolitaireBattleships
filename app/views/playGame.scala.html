@@ -1,6 +1,6 @@
-@(model:de.htwg.scala.solitairebattleship.model.Battleship, placeShipForm:Form[PlaceShipData])
+@(model:de.htwg.scala.solitairebattleship.model.IGame, placeShipForm:Form[PlaceShipData])
 
-@import de.htwg.scala.solitairebattleship.model.Battleship
+@import de.htwg.scala.solitairebattleship.model.IGame
 @import de.htwg.scala.solitairebattleship.model.Ship
 @import helper._
 
@@ -16,19 +16,19 @@
     <table>
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until model.userGrid.size) {
+      @for(x <- 0 until model.gridSize) {
         <td>@((x+65).toChar)</td>
       }
       <td>@(" ")</td>
     </tr>
 
-    @for(y <- 0 until model.userGrid.size) {
+    @for(y <- 0 until model.gridSize) {
       <tr>
         <td>@((y+65).toChar)</td>
-        @for(x <- 0 until model.userGrid.size) {
+        @for(x <- 0 until model.gridSize) {
           <td>
             @{
-              val s:Ship = model.userGrid.getCell(x, y)
+              val s:Ship = model.gameGrid.getCell(x, y)
               if(s == null) {
                 "~"
               } else {
@@ -37,13 +37,13 @@
             }
           </td>
         }
-        <td>@(model.genGrid.getRowSum(y).toString)</td>
+        <td>@(model.gameGrid.getRowSum(y).toString)</td>
       </tr>
     }
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until model.userGrid.size) {
-        <td>@(model.genGrid.getColumnSum(x))</td>
+      @for(x <- 0 until model.gameGrid.size) {
+        <td>@(model.gameGrid.getColumnSum(x))</td>
       }
       <td>@(" ")</td>
     </tr>
@@ -70,8 +70,8 @@
   
   @form(routes.Application.placeShip) {
     @select( placeShipForm("id"), options(List("1", "2")) )
-    @select( placeShipForm("x"), options((0 to model.userGrid.size).map(i =>(i+65).toChar.toString).toList) )
-    @select( placeShipForm("y"), options((0 to model.userGrid.size).map(i =>(i+65).toChar.toString).toList) )
+    @select( placeShipForm("x"), options((0 to model.gameGrid.size).map(i =>(i+65).toChar.toString).toList) )
+    @select( placeShipForm("y"), options((0 to model.gameGrid.size).map(i =>(i+65).toChar.toString).toList) )
     @select( placeShipForm("orientation"), options(List("Horizontal", "Vertical")) )
 
     <input type="submit" value="Place Ship"/>
