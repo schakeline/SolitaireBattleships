@@ -2,7 +2,8 @@ package de.htwg.scala.solitairebattleship
 
 import de.htwg.scala.solitairebattleship.controller.GameController
 import de.htwg.scala.solitairebattleship.view.TUI
-
+import de.htwg.scala.solitairebattleship.view.GUI
+import de.htwg.scala.solitairebattleship.view.GUIFactory
 
 object SolitaireBattleship {
   
@@ -11,13 +12,20 @@ object SolitaireBattleship {
     // init controller
     val controller = new GameController
 
-    // start UIs
+    //start GUI  
+    val g = new GUIFactory(controller)
+    g.run
+    
+    // start TUI
     val tui = new TUI(controller)
-
+    
     // start input from tui
     do {
-      print("> ")
+        print(Console.BLUE + "> " + Console.RESET)
     }
     while (tui.processUserInput(readLine()))
+
+    // if user enters q in TUI exit will be executed
+    System.exit(0)
   }
 }

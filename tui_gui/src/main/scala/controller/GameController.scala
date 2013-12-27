@@ -1,55 +1,51 @@
 package de.htwg.scala.solitairebattleship.controller
 
+import scala.collection.immutable.ListSet
+import de.htwg.scala.solitairebattleship.view.IView
 import de.htwg.scala.solitairebattleship.model._
 import de.htwg.scala.solitairebattleship.util.Orientation._
 
+
 class GameController {
-  private var _model:Battleship = new Battleship
-  private def model_=(model:Battleship) {_model = model}
-  def model = _model
+
+  private var views:ListSet[IView] = new ListSet()
+  def registerView(theView:IView) {views = views + theView}
+  def unregisterView(theView:IView) {views = views - theView}
 
   def newGame(gridSize:Int = 10) {
-    model.ships = ShipFactory.getShips(gridSize)
-    model.genGrid = new GameGenerator(model.ships, gridSize).generateGrid
-    model.userGrid = new Grid(gridSize)
+    if (gridSize < 3 || gridSize > 10) {
+      throw new IllegalArgumentException()
+    } else {
+      val ships:List[Ship] = ShipFactory.getShips(gridSize)
+      val grid = new GameGenerator(ships, gridSize).generateGrid
+      Model.game = new Game(ships, grid)
+    }
   }
 
   def placeShip(id:Int, x:Int, y:Int, orientation:Orientation) {
+    // get ship
+    var ship = Model.game.getShipWithID(id) // return type is Option[Ship]
+    Model.game.placeShip(ship, x, y, orientation) // throws exception if no ship found
     
-    try {
-      // get ship
-      var ship = model.getShipWithID(id) // return type is Option[Ship]
-      model.placeShip(ship.get, x, y, orientation) // throws exception if no ship found
-    } catch {
-      case e:Exception => println("ERROR")// FIXME: view.showError(e)
-    }
-
-
-    // catch exceptions and pass to ui
-    // if all ships are placed validate game
-    // call uis error method
-
-    if (model.getUnplacedShips.isEmpty) {
-      if (Validator.validateNeighborhood(model.userGrid))
-      
-
-      Validator.validateRowSums(model.userGrid, model.genGrid).foreach(r => print(r))
-
-      Validator.validateColumnSums(model.userGrid, model.genGrid).foreach(c => print(c))
-
+    if (Model.game.getUnplacedShips.isEmpty) {
+      // check if valid
+      if (Model.game.isValid) {
+        views.foreach(v => v.showGameFinished)
+        Model.game = null
+      }
+      else views.foreach(v => v.showValidationResult)
     }
   }
 
   def removeShip(id:Int) {
-    
-    try {
-      // get ship
-      var ship = model.getShipWithID(id) // return type is Option[Ship]
-      model.removeShip(ship.get) // throws exception if no ship found
-    } catch {
-      case e:Exception => println("ERROR")//FIXME: view.showError(e)
-    }
+    // get ship
+    var ship = Model.game.getShipWithID(id) // return type is Option[Ship]
+    Model.game.removeShip(ship) // throws exception if no ship found
+  }
 
+  def showSolution {
+    views.foreach(v => v.showSolution)
+    Model.game = null
   }
 
 }

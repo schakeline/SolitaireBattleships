@@ -62,42 +62,38 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
         positions = new Tuple3(x,y,o) :: positions
     
       val size = positions.size
-      for(i <- 0 until size)
-    {
-      val tmpGrid = grid.copy
-      val tmpPos = positions(rand.nextInt(size - i))
-      positions = positions.filter(p => p != tmpPos)
+      for (i <- 0 until size) {
+        var tmpGrid = grid.copy()
+        val tmpPos = positions(rand.nextInt(size - i))
+        positions = positions.filter(p => p != tmpPos)
       
-      //iterate over all positions
-      var pos:Position = null;
-      if(tmpPos._3 == 0)
-    pos = new Position(tmpPos._1,tmpPos._2,Horizontal)
-      else pos = new Position(tmpPos._1,tmpPos._2,Vertical)
+        //iterate over all positions
+        var pos:Position = null;
+        if (tmpPos._3 == 0)
+          pos = new Position(tmpPos._1,tmpPos._2,Horizontal)
+        else pos = new Position(tmpPos._1,tmpPos._2,Vertical)
                     
-      //print("pos:" + pos.x + "\\" + pos.y + "\t ship: " +theShip.id + " | ")
+        //print("pos:" + pos.x + "\\" + pos.y + "\t ship: " +theShip.id + " | ")
           
-    if(CellsAreEmpty(pos,theShip,grid))
-    {       
-      var tmpIDs:List[Int] = Nil        
+        if (CellsAreEmpty(pos,theShip,grid)){       
+          var tmpIDs:List[Int] = Nil        
             
-      //the Cell is empty so place the ship
-      tmpGrid.placeShip(theShip, pos)         
+          //the Cell is empty so place the ship
+          tmpGrid = tmpGrid.placeShip(theShip, pos)         
             
-      if(Validator.validateNeighborhood(tmpGrid) == false)
-      {
-        //Bad Neighborhood, we need to remove the ship
-        tmpGrid.removeShip(theShip)
-        tmpIDs = shipIDs
+          if (Validator.validateNeighborhood(tmpGrid).isEmpty == false){
+            //Bad Neighborhood, we need to remove the ship
+            tmpGrid = tmpGrid.removeShip(theShip)
+            tmpIDs = shipIDs
+          }
+          else{
+            //ship is placed so place the next ship. not set theShip twice  
+            var tmpIDs = shipIDs.filter(_ != theShip.id) 
+            placeShips(tmpIDs,tmpGrid,ships)
+          } 
+        }
       }
-      else
-      {
-        //ship is placed so place the next ship. not set theShip twice  
-        var tmpIDs = shipIDs.filter(_ != theShip.id) 
-        placeShips(tmpIDs,tmpGrid,ships)
-      } 
     }
-      }
-  }
   } 
   
   private def CellsAreEmpty(position:Position, ship:Ship, grid:Grid):Boolean = {
@@ -118,7 +114,3 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
   }
  
 }
-  
-  
-  
-  

@@ -1,8 +1,9 @@
 package de.htwg.scala.solitairebattleship.view
 
-import de.htwg.scala.solitairebattleship.model.IBattleship
+import de.htwg.scala.solitairebattleship.model.IGame
 
 trait IView {
-  var model:IBattleship // setter: observer registrieren
-  def receiveUpdate()
+  def showGameFinished
+  def showValidationResult
+  def showSolution
 }
