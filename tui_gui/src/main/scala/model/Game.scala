@@ -2,6 +2,7 @@ package de.htwg.scala.solitairebattleship.model
 
 import de.htwg.scala.solitairebattleship.util.Observable
 import de.htwg.scala.solitairebattleship.util.Orientation._
+import scala.collection.immutable.ListSet
 
 class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
     
@@ -46,17 +47,19 @@ class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
   /* 
    * @returns a orderd list of unset ships, beginning with the smallest ship.
   **/
-  def getUnplacedShips:List[Ship] = {    
-    var unplacedShips = ships.toSet
+  def getUnplacedShips:List[Ship] = (ships.toSet--getPlacedShips).toList.sortBy(s => (s.size, s.id))
+
+  def getPlacedShips:List[Ship] = {
+    var placedShips = Set[Ship]()
 
     for (i <- 0 until userGrid.size; j <- 0 until userGrid.size) {
       var ship:Ship = userGrid.getCell(i, j)
 
       if (ship != null) {
-        unplacedShips = (unplacedShips-ship)
+        placedShips = (placedShips+ship)
       }
     }
-    unplacedShips.toList.sortBy(x => (x.size, x.id))
+    placedShips.toList.sortBy(x => x.id)
   }
 
   def getShipWithID(theID:Int):Ship = ships.find(p => p.id == theID).get

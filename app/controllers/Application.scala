@@ -18,13 +18,15 @@ object Application extends Controller {
   
   val placeShipForm = Form( 
     mapping(
-      "id" -> number(min=0, max=10), //gameController.model.userGrid.size
-      "x" -> text, //(min=0, max=10), 
-      "y" -> text, //(min=0, max=10), 
+      "id" -> number(min=0),
+      "x" -> text,
+      "y" -> text,
       "orientation" -> text)
     (PlaceShipData.apply)
     (PlaceShipData.unapply)
   )
+
+  val removeShipForm = Form( "id" -> number(min=0) )
 
   val possibleGridSizes = (3 to 10).map(i =>i.toString).toList
 
@@ -40,7 +42,7 @@ object Application extends Controller {
       size => {
         //Model create game
         gameController.newGame(size)
-        Ok( views.html.playGame(Model.game, placeShipForm) )
+        Ok( views.html.playGame(placeShipForm, removeShipForm) )
       }
     )
   }
@@ -49,7 +51,7 @@ object Application extends Controller {
     implicit request =>
       placeShipForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(views.html.playGame(Model.game, placeShipForm))
+          BadRequest(views.html.playGame(placeShipForm, removeShipForm))
         },
         placeShipData => {
           val orientation = if(placeShipData.orientation == "Horizontal") Orientation.Horizontal else Orientation.Vertical
@@ -57,9 +59,20 @@ object Application extends Controller {
           val y:Int = placeShipData.y(0).toInt-65
           gameController.placeShip(placeShipData.id, x, y, orientation)
           println("OK")
-          Ok( views.html.playGame(Model.game, placeShipForm) )
+          Ok( views.html.playGame(placeShipForm, removeShipForm) )
         }
       )
+  }
+
+  def removeShip = Action { implicit request =>
+    removeShipForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.playGame(placeShipForm, removeShipForm)),
+      id => {
+        //Model create game
+        gameController.removeShip(id)
+        Ok( views.html.playGame(placeShipForm, removeShipForm) )
+      }
+    )
   }
 
 }

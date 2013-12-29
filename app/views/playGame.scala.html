@@ -1,6 +1,8 @@
-@(model:de.htwg.scala.solitairebattleship.model.IGame, placeShipForm:Form[PlaceShipData])
+@(placeShipForm:Form[PlaceShipData], removeShipForm:Form[Int])
 
+@import de.htwg.scala.solitairebattleship.view.Formatter
 @import de.htwg.scala.solitairebattleship.model.IGame
+@import de.htwg.scala.solitairebattleship.model.Model
 @import de.htwg.scala.solitairebattleship.model.Ship
 @import helper._
 
@@ -16,19 +18,19 @@
     <table>
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until model.gridSize) {
+      @for(x <- 0 until Model.game.gridSize) {
         <td>@((x+65).toChar)</td>
       }
       <td>@(" ")</td>
     </tr>
 
-    @for(y <- 0 until model.gridSize) {
+    @for(y <- 0 until Model.game.gridSize) {
       <tr>
         <td>@((y+65).toChar)</td>
-        @for(x <- 0 until model.gridSize) {
+        @for(x <- 0 until Model.game.gridSize) {
           <td>
             @{
-              val s:Ship = model.gameGrid.getCell(x, y)
+              val s:Ship = Model.game.gameGrid.getCell(x, y)
               if(s == null) {
                 "~"
               } else {
@@ -37,13 +39,13 @@
             }
           </td>
         }
-        <td>@(model.gameGrid.getRowSum(y).toString)</td>
+        <td>@(Model.game.gameGrid.getRowSum(y).toString)</td>
       </tr>
     }
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until model.gameGrid.size) {
-        <td>@(model.gameGrid.getColumnSum(x))</td>
+      @for(x <- 0 until Model.game.gameGrid.size) {
+        <td>@(Model.game.gameGrid.getColumnSum(x))</td>
       }
       <td>@(" ")</td>
     </tr>
@@ -52,28 +54,28 @@
 
 @unplacedShips = {
   <div>
-    @for(s <- model.getUnplacedShips) {
+    @for(s <- Model.game.getUnplacedShips) {
       <div id="ship_+@(s.id.toString)" class="shipWithSize@(s.size.toString)">@(s.id.toString)</div>
     }
   </div>
 }
 
-  @unplacedShipIDs = {
-    var ships:List[String] = Nil
-    model.getUnplacedShips.foreach(s => ships = shipID :+ s.id.toString)
-    ships
-  }
-  
-  
 
-@hiddenForm = {
   
+@hiddenForm = {
+
   @form(routes.Application.placeShip) {
-    @select( placeShipForm("id"), options(List("1", "2")) )
-    @select( placeShipForm("x"), options((0 to model.gameGrid.size).map(i =>(i+65).toChar.toString).toList) )
-    @select( placeShipForm("y"), options((0 to model.gameGrid.size).map(i =>(i+65).toChar.toString).toList) )
+    @select( placeShipForm("id"), options(Formatter.shipsToShipIdList(Model.game.getUnplacedShips)) )
+    @select( placeShipForm("x"), options(Formatter.coordinatesForGrid(Model.game.gridSize)) )
+    @select( placeShipForm("y"), options(Formatter.coordinatesForGrid(Model.game.gridSize)) )
     @select( placeShipForm("orientation"), options(List("Horizontal", "Vertical")) )
 
     <input type="submit" value="Place Ship"/>
+  }
+
+  @form(routes.Application.removeShip) {
+    @select( placeShipForm("id"), options(Formatter.shipsToShipIdList(Model.game.getPlacedShips)) )
+
+    <input type="submit" value="Remove Ship"/>
   }
 }

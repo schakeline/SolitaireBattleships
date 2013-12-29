@@ -11,4 +11,5 @@ trait IGame {
   def placeShip(theShip:Ship, x:Int, y:Int, orientation:Orientation)
   def removeShip(theShip:Ship)
   def getUnplacedShips:List[Ship]
+  def getPlacedShips:List[Ship]
 }
