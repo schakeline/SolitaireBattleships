@@ -1,4 +1,4 @@
-@(placeShipForm:Form[PlaceShipData], removeShipForm:Form[Int])
+@(placeShipForm:Form[PlaceShipData], removeShipForm:Form[Int], errorMsg:Option[String], showValidationRes:Boolean)
 
 @import de.htwg.scala.solitairebattleship.view.Formatter
 @import de.htwg.scala.solitairebattleship.model.IGame
@@ -12,6 +12,11 @@
   @grid
   @unplacedShips
   @hiddenForm
+
+  @if(!errorMsg.isEmpty) {
+    <script type="text/javascript">alert("@errorMsg.get")</script>
+  }
+
 }
 
 @grid = {
@@ -44,7 +49,7 @@
     }
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until Model.game.gameGrid.size) {
+      @for(x <- 0 until Model.game.gridSize) {
         <td>@(Model.game.gameGrid.getColumnSum(x))</td>
       }
       <td>@(" ")</td>
@@ -59,8 +64,6 @@
     }
   </div>
 }
-
-
   
 @hiddenForm = {
 

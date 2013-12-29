@@ -1,0 +1,45 @@
+@()
+
+@import de.htwg.scala.solitairebattleship.model.Model
+@import de.htwg.scala.solitairebattleship.model.Ship
+
+
+@main("Solitaire Battleship") {
+  <h1>Show Solution</h1>
+
+  <table>
+    <tr>
+      <td>@(" ")</td>
+      @for(x <- 0 until Model.game.gridSize) {
+        <td>@((x+65).toChar)</td>
+      }
+      <td>@(" ")</td>
+    </tr>
+
+    @for(y <- 0 until Model.game.gridSize) {
+      <tr>
+        <td>@((y+65).toChar)</td>
+        @for(x <- 0 until Model.game.gridSize) {
+          <td>
+            @{
+              val s:Ship = Model.game.solution.getCell(x, y)
+              if(s == null) {
+                "~"
+              } else {
+                s.id.toString
+              }
+            }
+          </td>
+        }
+        <td>@(Model.game.solution.getRowSum(y).toString)</td>
+      </tr>
+    }
+    <tr>
+      <td>@(" ")</td>
+      @for(x <- 0 until Model.game.gridSize) {
+        <td>@(Model.game.solution.getColumnSum(x))</td>
+      }
+      <td>@(" ")</td>
+    </tr>
+  </table>
+}
