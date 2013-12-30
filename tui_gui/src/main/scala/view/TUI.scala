@@ -175,7 +175,8 @@ class TUI(val controller:GameController) extends Observer with IView {
         }
       }
       }
-    } catch {
+    }
+    catch {
       case e:IllegalArgumentException =>
         printError("Illegal argument")
       case e:IndexOutOfBoundsException =>

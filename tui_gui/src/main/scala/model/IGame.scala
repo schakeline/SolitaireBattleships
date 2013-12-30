@@ -12,4 +12,9 @@ trait IGame {
   def removeShip(theShip:Ship)
   def getUnplacedShips:List[Ship]
   def getPlacedShips:List[Ship]
+  def getShips:List[Ship]
+
+  def validateRowSum(r:Int):Boolean
+  def validateColumnSum(c:Int):Boolean
+  def getCollisions():List[Tuple2[Int,Int]]
 }

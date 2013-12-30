@@ -1,6 +1,6 @@
-@()
+@(solution:de.htwg.scala.solitairebattleship.model.IGrid)
 
-@import de.htwg.scala.solitairebattleship.model.Model
+@import de.htwg.scala.solitairebattleship.model.IGrid
 @import de.htwg.scala.solitairebattleship.model.Ship
 
 
@@ -10,19 +10,19 @@
   <table>
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until Model.game.gridSize) {
+      @for(x <- 0 until solution.size) {
         <td>@((x+65).toChar)</td>
       }
       <td>@(" ")</td>
     </tr>
 
-    @for(y <- 0 until Model.game.gridSize) {
+    @for(y <- 0 until solution.size) {
       <tr>
         <td>@((y+65).toChar)</td>
-        @for(x <- 0 until Model.game.gridSize) {
+        @for(x <- 0 until solution.size) {
           <td>
             @{
-              val s:Ship = Model.game.solution.getCell(x, y)
+              val s:Ship = solution.getCell(x, y)
               if(s == null) {
                 "~"
               } else {
@@ -31,15 +31,17 @@
             }
           </td>
         }
-        <td>@(Model.game.solution.getRowSum(y).toString)</td>
+        <td>@(solution.getRowSum(y).toString)</td>
       </tr>
     }
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until Model.game.gridSize) {
-        <td>@(Model.game.solution.getColumnSum(x))</td>
+      @for(x <- 0 until solution.size) {
+        <td>@(solution.getColumnSum(x))</td>
       }
       <td>@(" ")</td>
     </tr>
   </table>
+
+  <a href="@routes.Application.index">New Game</a>
 }

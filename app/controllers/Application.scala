@@ -7,14 +7,20 @@ import play.api.data.Forms._
 import de.htwg.scala.solitairebattleship.controller.GameController
 import de.htwg.scala.solitairebattleship.util.Orientation
 import de.htwg.scala.solitairebattleship.model.Model
+import de.htwg.scala.solitairebattleship.model.IGame
 import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
+import de.htwg.scala.solitairebattleship.util.Observer
+import de.htwg.scala.solitairebattleship.view.IView
+
 
 case class PlaceShipData(id: Int, x: String, y:String, orientation:String)
 
-object Application extends Controller {
+object Application extends Controller with Observer with IView {
 
+  Model.add(this) // listen to model
   val gameController = new GameController
-
+  gameController.registerView(this)
+  
   val newGameForm = Form( "size" -> number(min=3, max=10) )
   
   val placeShipForm = Form( 
@@ -31,7 +37,10 @@ object Application extends Controller {
 
   val possibleGridSizes = (3 to 10).map(i =>i.toString).toList
 
-  
+  var model:IGame = Model.game
+  var showValidation:Boolean = false
+  var gameFinished:Boolean = false
+
 
   def index = Action {
     Ok(views.html.index(newGameForm, possibleGridSizes))
@@ -43,7 +52,7 @@ object Application extends Controller {
       size => {
         //Model create game
         gameController.newGame(size)
-        Ok( views.html.playGame(placeShipForm, removeShipForm, None, false) )
+        Ok( views.html.playGame(model, placeShipForm, removeShipForm, None, false) )
       }
     )
   }
@@ -52,7 +61,7 @@ object Application extends Controller {
     implicit request =>
       placeShipForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(views.html.playGame(placeShipForm, removeShipForm, Some("Bad Request"), false))
+          BadRequest(views.html.playGame(model, placeShipForm, removeShipForm, Some("Bad Request"), false))
         },
         placeShipData => {
           val orientation = if(placeShipData.orientation == "Horizontal") Orientation.Horizontal else Orientation.Vertical
@@ -72,14 +81,19 @@ object Application extends Controller {
               errorMsg = Some("ShipCollition: " + e.getMessage)
           }
           
-          Ok( views.html.playGame(placeShipForm, removeShipForm, errorMsg, false) )
+          if (gameFinished) {
+            gameFinished = false
+            Ok(views.html.gameFinished())
+          } else {
+            Ok( views.html.playGame(model, placeShipForm, removeShipForm, errorMsg, showValidation) )
+          }
         }
       )
   }
 
   def removeShip = Action { implicit request =>
     removeShipForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.playGame(placeShipForm, removeShipForm, Some("Illegal argument"), false)),
+      errors => BadRequest(views.html.playGame(model, placeShipForm, removeShipForm, Some("Illegal argument"), false)),
       id => {
         //Model create game
         var errorMsg:Option[String] = None
@@ -90,13 +104,34 @@ object Application extends Controller {
           case e:IllegalArgumentException => 
             errorMsg = Some("Illegal argument")
         }
-        Ok( views.html.playGame(placeShipForm, removeShipForm, errorMsg, false) )
+        Ok( views.html.playGame(model, placeShipForm, removeShipForm, errorMsg, false) )
       }
     )
   }
 
-  def showSolution = Action {
-    Ok(views.html.showSolution())
+  
+  // Observer methods
+  def update {
+    model = Model.game
+    showValidation = false
+  }
+
+
+  // IView methods
+  def solution = Action {
+    Ok(views.html.showSolution(model.solution))
+  }
+
+  def showSolution {
+
+  }
+
+  def showValidationResult {
+    showValidation = true
+  }
+
+  def showGameFinished {
+    gameFinished = true
   }
 
 }

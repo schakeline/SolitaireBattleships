@@ -9,7 +9,7 @@ GET     /                           controllers.Application.index
 GET     /playGame                   controllers.Application.playGame
 GET     /playGame/placeShip         controllers.Application.placeShip
 GET     /playGame/removeShip        controllers.Application.removeShip
-GET     /playGame/showSolution      controllers.Application.showSolution
+GET     /playGame/solution          controllers.Application.solution
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

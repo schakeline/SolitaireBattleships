@@ -1,4 +1,4 @@
-@(placeShipForm:Form[PlaceShipData], removeShipForm:Form[Int], errorMsg:Option[String], showValidationRes:Boolean)
+@(model:de.htwg.scala.solitairebattleship.model.IGame, placeShipForm:Form[PlaceShipData], removeShipForm:Form[Int], errorMsg:Option[String], showValidation:Boolean)
 
 @import de.htwg.scala.solitairebattleship.view.Formatter
 @import de.htwg.scala.solitairebattleship.model.IGame
@@ -13,9 +13,14 @@
   @unplacedShips
   @hiddenForm
 
+  <a href="@routes.Application.index">New Game</a>
+  <a href="@routes.Application.solution">Show Solution</a>
+
   @if(!errorMsg.isEmpty) {
     <script type="text/javascript">alert("@errorMsg.get")</script>
   }
+
+
 
 }
 
@@ -23,34 +28,51 @@
     <table>
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until Model.game.gridSize) {
+      @for(x <- 0 until model.gridSize) {
         <td>@((x+65).toChar)</td>
       }
       <td>@(" ")</td>
     </tr>
-
-    @for(y <- 0 until Model.game.gridSize) {
+    @for(y <- 0 until model.gridSize) {
       <tr>
         <td>@((y+65).toChar)</td>
-        @for(x <- 0 until Model.game.gridSize) {
-          <td>
-            @{
-              val s:Ship = Model.game.gameGrid.getCell(x, y)
-              if(s == null) {
-                "~"
-              } else {
-                s.id.toString
-              }
+        @for(x <- 0 until model.gridSize) {  
+          @if(showValidation && model.getCollisions.contains((x,y))) {
+            <td class="collision">@model.gameGrid.getCell(x, y).id.toString</td>
+          } else {
+            @if(model.gameGrid.getCell(x, y) != null) {
+              <td class="occupied">@model.gameGrid.getCell(x, y).id.toString</td>  
+            } else {
+              <td>~</td>
             }
-          </td>
+          }
         }
-        <td>@(Model.game.gameGrid.getRowSum(y).toString)</td>
+        @if(showValidation) {
+          @if(model.validateRowSum(y)) {
+          <td class="valid">
+          } else {
+            <td class="notValid">
+          }
+        } else {
+          <td>
+        }
+        @(model.gameGrid.getRowSum(y))</td>
+      
       </tr>
     }
     <tr>
       <td>@(" ")</td>
-      @for(x <- 0 until Model.game.gridSize) {
-        <td>@(Model.game.gameGrid.getColumnSum(x))</td>
+      @for(x <- 0 until model.gridSize) {
+        @if(showValidation) {
+          @if(model.validateColumnSum(x)) {
+          <td class="valid">
+          } else {
+            <td class="notValid">
+          }
+        } else {
+          <td>
+        }
+        @(model.gameGrid.getColumnSum(x))</td>
       }
       <td>@(" ")</td>
     </tr>
@@ -59,7 +81,7 @@
 
 @unplacedShips = {
   <div>
-    @for(s <- Model.game.getUnplacedShips) {
+    @for(s <- model.getUnplacedShips) {
       <div id="ship_+@(s.id.toString)" class="shipWithSize@(s.size.toString)">@(s.id.toString)</div>
     }
   </div>
@@ -68,16 +90,16 @@
 @hiddenForm = {
 
   @form(routes.Application.placeShip) {
-    @select( placeShipForm("id"), options(Formatter.shipsToShipIdList(Model.game.getUnplacedShips)) )
-    @select( placeShipForm("x"), options(Formatter.coordinatesForGrid(Model.game.gridSize)) )
-    @select( placeShipForm("y"), options(Formatter.coordinatesForGrid(Model.game.gridSize)) )
+    @select( placeShipForm("id"), options(Formatter.shipsToShipIdList(model.getShips)) )
+    @select( placeShipForm("y"), options(Formatter.coordinatesForGrid(model.gridSize)) )
+    @select( placeShipForm("x"), options(Formatter.coordinatesForGrid(model.gridSize)) )
     @select( placeShipForm("orientation"), options(List("Horizontal", "Vertical")) )
 
     <input type="submit" value="Place Ship"/>
   }
 
   @form(routes.Application.removeShip) {
-    @select( placeShipForm("id"), options(Formatter.shipsToShipIdList(Model.game.getPlacedShips)) )
+    @select( placeShipForm("id"), options(Formatter.shipsToShipIdList(model.getPlacedShips)) )
 
     <input type="submit" value="Remove Ship"/>
   }

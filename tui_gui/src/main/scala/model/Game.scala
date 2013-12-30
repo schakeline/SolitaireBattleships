@@ -62,6 +62,8 @@ class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
     placedShips.toList.sortBy(x => x.id)
   }
 
+  def getShips:List[Ship] = ships
+
   def getShipWithID(theID:Int):Ship = ships.find(p => p.id == theID).get
   
   def isValid():Boolean = {
