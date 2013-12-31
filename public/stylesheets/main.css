@@ -13,3 +13,40 @@ td {
 td.occupied {
   background-color: grey;
 }
+
+.info {
+  visibility: hidden;
+  width: 0px;
+  height: 0px;
+}
+
+div.left, div.right {
+  width: 25%;
+}
+
+div.center {
+  text-align: center;
+}
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
+form {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 80%;
+  height: 30px;
+}
+
+form dl, form input {
+  float:left;
+  vertical-align: middle;
+  margin: 0px;
+}
+
+dt, label, dd, select {
+  float:left;
+  vertical-align: middle;
+  margin: 0px;
+}
