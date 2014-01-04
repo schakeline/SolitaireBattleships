@@ -45,7 +45,7 @@ class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
   }
 
   /* 
-   * @returns a orderd list of unset ships, beginning with the smallest ship.
+   * @returns a ordered list of unset ships, beginning with the smallest ship.
   **/
   def getUnplacedShips:List[Ship] = (ships.toSet--getPlacedShips).toList.sortBy(s => (s.size, s.id))
 

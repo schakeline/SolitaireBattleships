@@ -4,6 +4,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
 import de.htwg.scala.solitairebattleship.util.Orientation
+import de.htwg.scala.solitairebattleship.util.Orientation
 
 class GridSpec extends FlatSpec with Matchers {
 	
@@ -44,7 +45,7 @@ class GridSpec extends FlatSpec with Matchers {
     var s2 = new Ship(0,2)
     val gridSize = 4
     var g = new Grid(4)
-    g.placeShip(s1, 0, 0, Orientation.Horizontal)
+    g = g.placeShip(s1, 0, 0, Orientation.Horizontal)
     an [ShipCollisionException] should be thrownBy g.placeShip(s2, 1, 0, Orientation.Vertical)
     
   }
@@ -54,8 +55,8 @@ class GridSpec extends FlatSpec with Matchers {
     val gridSize = 4
     var g = new Grid(4)
     
-    g.placeShip(s, 0, 0, Orientation.Horizontal)
-    g.placeShip(s, 1, 0, Orientation.Vertical)
+    g = g.placeShip(s, 0, 0, Orientation.Horizontal)
+    g = g.placeShip(s, 1, 0, Orientation.Vertical)
     
     g.getCell(0, 0) should be(null)
     g.getCell(1, 0) should be(s)
@@ -66,22 +67,22 @@ class GridSpec extends FlatSpec with Matchers {
     var s = new Ship(0,4)
     var g = new Grid(8)
     
-    g.placeShip(s, 1, 0, Orientation.Horizontal)
-    g.getPosOfShip(s) should be((1,0))
+    g = g.placeShip(s, 1, 0, Orientation.Horizontal)
+    g.getCell(1, 0) should be(s)
     
-    g.placeShip(s, 1, 0, Orientation.Horizontal)
-    g.getPosOfShip(s) should be((1,0))
+    g = g.placeShip(s, 1, 0, Orientation.Horizontal)
+    g.getCell(1,0) should be(s)
   }
   
   "A ship" should "be removable" in {
     var s = new Ship(0,4)
     var g = new Grid(8)
     
-    g.placeShip(s, 1, 0, Orientation.Horizontal)
-    g.getPosOfShip(s) should be((1,0))
+    g = g.placeShip(s, 1, 0, Orientation.Horizontal)
+    g.getCell(1,0) should be(s)
     
-    g.removeShip(s)
-    g.getPosOfShip(s) should be((-1,-1))
+    g = g.removeShip(s)
+    g.getCell(1,0) should be(null)
   }
   
   "The RowSum of an Empty Grid" should "be 0" in {
@@ -90,16 +91,16 @@ class GridSpec extends FlatSpec with Matchers {
   }
   
   "The RowSum" should "be 1" in {
-    val g = new Grid(5)
+    var g = new Grid(5)
     var s = new Ship(0,2)
-    g.placeShip(s, 0,0,Orientation.Vertical) 
+    g = g.placeShip(s, 0,0,Orientation.Vertical) 
     g.getRowSum(0) should be (1)
   } 
   
   "The RowSum" should "be 3" in {
-    val g = new Grid(5)
+    var g = new Grid(5)
     var s = new Ship(0,3)
-    g.placeShip(s,0,0,Orientation.Horizontal)
+    g = g.placeShip(s,0,0,Orientation.Horizontal)
     g.getRowSum(0) should be(3)
   }
   
@@ -109,16 +110,31 @@ class GridSpec extends FlatSpec with Matchers {
   }
   
   "The ColumnSum" should "be 1" in {
-    val g = new Grid(5)
+    var g = new Grid(5)
     var s = new Ship(0,3)
-    g.placeShip(s,0,0,Orientation.Horizontal)
+    g = g.placeShip(s,0,0,Orientation.Horizontal)
     g.getColumnSum(0) should be(1)
   }
   
   "The ColumnSum" should "be 2" in {
-    val g =  new Grid(5)
+    var g =  new Grid(5)
     var s = new Ship(0,2)
-    g.placeShip(s,0,0,Orientation.Vertical)
+    g = g.placeShip(s,0,0,Orientation.Vertical)
     g.getColumnSum(0) should be(2)
+  }
+  
+  "copy a grid" should "create a deep copy" in {
+    var g = new Grid(5)
+    val s1 = new Ship(0,1)
+    val s2 = new Ship(1,1)
+    
+    g = g.placeShip(s1, 0,0,Orientation.Horizontal)
+    var g2 = g.copy
+    g2 = g2.placeShip(s2, 2, 2, Orientation.Horizontal)
+    
+    g.getCell(0,0) should be(s1)
+    g.getCell(2,2) should be(null)
+    g2.getCell(0,0) should be(s1)
+    g2.getCell(2, 2) should be(s2)
   }
 }

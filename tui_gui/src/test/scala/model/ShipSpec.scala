@@ -23,4 +23,11 @@ class ShipSpec extends FlatSpec with Matchers {
 	"Creating a ship with a size < 1" should "throw an IllegalArgumentException" in {
 	  an [IllegalArgumentException] should be thrownBy new Ship(0,-1)
 	}
+	
+	"To String" should "return the correct string" in {
+	  val s1 = new Ship(1,2)
+	  s1.toString should be("<11>")
+	  val s2 = new Ship(2,1)
+	  s2.toString should be("<2>")
+	}
 }

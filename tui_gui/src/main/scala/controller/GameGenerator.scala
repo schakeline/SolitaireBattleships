@@ -7,27 +7,19 @@ import de.htwg.scala.solitairebattleship.util.Position
 
 class GameGenerator (val allShips:List[Ship],val gameSize:Int){
   
-  var allShipPositions:List[ShipPositions] = Nil 
   var grid = new Grid(gameSize)
   var solutions:List[Grid] = Nil 
   var rand = new Random()
-  var calls = 0
   var solutionFound = false
   
-  allShips.foreach(f => {allShipPositions = new ShipPositions(f, gameSize) :: allShipPositions})
-  allShipPositions =  allShipPositions.sortBy(b => b.ship.size)
-  
   private def shipIDs() = {
-    val ids = allShipPositions.map(b => b.ship.id)
+    val ids = allShips.map(b => b.id)
     ids.sorted
   }
   
   def generateGrid():Grid = 
   {
     placeShips(shipIDs, grid, allShips)
-    println("Number of Solutions: " + solutions.size)
-    println("Calls:" + calls)
-    printGrid(solutions(0))
     return solutions(0)
   }
   
@@ -46,7 +38,6 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
   
   if(solutionFound) return
     
-  calls = calls + 1
   var theShip:Ship = null 
     //every id is set
     if(shipIDs.size==0){

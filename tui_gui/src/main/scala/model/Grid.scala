@@ -56,7 +56,7 @@ private val gridArray = Array.ofDim[Ship](size, size)
     newGrid
   }
       
-  def getRowSum(row:Int):Int = {
+  def getRowSum(row:Int):Int = {   
     var sum = 0
     for(x <- 0 until size){
       if((gridArray(row)(x)) != null) 

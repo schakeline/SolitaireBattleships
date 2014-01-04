@@ -11,7 +11,7 @@ object Validator {
     
     for (x <- 0 until theGrid.size; y <- 0 until theGrid.size){
       var hotSpot = theGrid.getCell(x,y)
-             
+      
       if (hotSpot != null){
          
         if (x < theGrid.size -1 ){
