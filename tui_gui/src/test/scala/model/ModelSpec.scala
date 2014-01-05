@@ -3,7 +3,6 @@ package de.htwg.scala.solitairebattleship.model
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 import de.htwg.scala.solitairebattleship.util.Observer
-import de.htwg.scala.solitairebattleship.model.Model
 
 
 class ModelSpec extends FlatSpec with Matchers {
