@@ -20,8 +20,55 @@
     <script type="text/javascript">alert("@errorMsg.get")</script>
   }
 
+  <script type="text/javascript">
+
+  var x = undefined;
+  var y = undefined;
+
+    $( "div.ship, td.occupied" ).on( "click", function(event) {
+      var selectedShip = $(this).text();
+      //$( "select[id*='id']" ).val(selectedShip); select#id
+      $("select[id*='id'] option").filter(function() {
+        return $(this).text() == selectedShip; 
+      }).prop('selected', true);
+      console.log("ShipID:"+selectedShip);
+    });
+
+    $( "td.free" ).on( "click", function(event) {
+      
+      if (x == undefined || y == undefined) {
+        x = $(this).attr("x");
+        y = $(this).attr("y");
+        $("select#y option").filter(function() {
+          return $(this).text() == y;
+        }).prop('selected', true);
+
+        $("select#x option").filter(function() {
+          return $(this).text() == x;
+        }).prop('selected', true);
+      } else {
+        
+        var orientation = "Horizontal"
+
+        if ($(this).attr("y") != y) {
+          orientation = "Vertical"
+        }
+
+        $("select#orientation option").filter(function() {
+            return $(this).text() == orientation;
+        }).prop('selected', true);
+
+        x = undefined;
+        y = undefined;
+
+        $( "input#submit_placeShip" ).parent().submit();
+      }
+      
+      console.log("Cell: "+ y+","+x);
+    });
 
 
+  </script>
 }
 
 @grid = {
@@ -38,12 +85,12 @@
         <td>@((y+65).toChar)</td>
         @for(x <- 0 until model.gridSize) {  
           @if(showValidation && model.getCollisions.contains((x,y))) {
-            <td class="collision">@model.gameGrid.getCell(x, y).id.toString</td>
+            <td x="@x" y="@y" class="collision">@model.gameGrid.getCell(x, y).id.toString</td>
           } else {
             @if(model.gameGrid.getCell(x, y) != null) {
-              <td class="occupied">@model.gameGrid.getCell(x, y).id.toString</td>  
+              <td x="@((x+65).toChar)" y="@((y+65).toChar)" class="occupied">@model.gameGrid.getCell(x, y).id.toString</td>  
             } else {
-              <td>~</td>
+              <td x="@((x+65).toChar)" y="@((y+65).toChar)" class="free">~</td>
             }
           }
         }
@@ -82,7 +129,7 @@
 @unplacedShips = {
   <div>
     @for(s <- model.getUnplacedShips) {
-      <div id="ship_+@(s.id.toString)" class="shipWithSize@(s.size.toString)">@(s.id.toString)</div>
+      <div id="@(s.id.toString)" class="ship">@(s.id.toString)</div> <!-- shipWithSize@(s.size.toString) -->
     }
   </div>
 }
@@ -95,7 +142,7 @@
     @select( placeShipForm("x"), options(Formatter.coordinatesForGrid(model.gridSize)) )
     @select( placeShipForm("orientation"), options(List("Horizontal", "Vertical")) )
 
-    <input type="submit" value="Place Ship"/>
+    <input id="submit_placeShip" type="submit" value="Place Ship"/>
   }
 
   @form(routes.Application.removeShip) {
