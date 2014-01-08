@@ -25,7 +25,7 @@
   var x = undefined;
   var y = undefined;
 
-    $( "div.ship, td.occupied" ).on( "click", function(event) {
+    $( "div.ship, td.occupied, td.collision" ).on( "click", function(event) {
       var selectedShip = $(this).text();
       //$( "select[id*='id']" ).val(selectedShip); select#id
       $("select[id*='id'] option").filter(function() {

@@ -5,7 +5,7 @@
 @main("Solitaire Battleship") {
 
     <h1>New Game</h1>
-    @form(routes.Application.playGame) {
+    @form(routes.Application.newGame) {
       @select( newGameForm("size"), options(gridSizes) )
 
       <input type="submit" value="Play!"/>

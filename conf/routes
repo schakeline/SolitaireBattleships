@@ -6,10 +6,12 @@
 GET     /                           controllers.Application.index
 
 # Tasks
-POST     /playGame                   controllers.Application.playGame
-POST     /playGame/placeShip         controllers.Application.placeShip
-POST     /playGame/removeShip        controllers.Application.removeShip
-POST     /playGame/solution          controllers.Application.solution
+GET     /playGame                   controllers.Application.playGame
+GET     /newGame                    controllers.Application.newGame
+GET     /playGame/placeShip         controllers.Application.placeShip
+GET     /playGame/removeShip        controllers.Application.removeShip
+GET     /solution                   controllers.Application.solution
+GET     /gameFinished               controllers.Application.gameFinished
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
