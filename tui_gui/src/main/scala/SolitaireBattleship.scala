@@ -8,13 +8,12 @@ import de.htwg.scala.solitairebattleship.view.GUIFactory
 object SolitaireBattleship {
   
   def main (args:Array[String]) = {
-    
     // init controller
     val controller = new GameController
 
-    //start GUI  
+    //start GUI
     val g = new GUIFactory(controller)
-    g.run
+    g.start
     
     // start TUI
     val tui = new TUI(controller)
@@ -28,4 +27,5 @@ object SolitaireBattleship {
     // if user enters q in TUI exit will be executed
     System.exit(0)
   }
+
 }

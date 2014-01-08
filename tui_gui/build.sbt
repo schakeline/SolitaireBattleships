@@ -15,7 +15,8 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "3.1.0",
   "org.scalatest" % "scalatest_2.10" % "2.0.RC3", 
-  "org.scala-lang" % "scala-swing" % "2.10.3"
+  "org.scala-lang" % "scala-swing" % "2.10.3",
+  "org.scala-lang" % "scala-actors" % "2.10.3"
   //"play" % "play_2.10" % "2.1-SNAPSHOT"
 )
 

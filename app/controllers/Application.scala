@@ -11,16 +11,29 @@ import de.htwg.scala.solitairebattleship.model.IGame
 import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
 import de.htwg.scala.solitairebattleship.util.Observer
 import de.htwg.scala.solitairebattleship.view.IView
+import de.htwg.scala.solitairebattleship.view.GUIFactory
+import de.htwg.scala.solitairebattleship.view.TUIFactory
+
 
 
 case class PlaceShipData(id: Int, x: String, y:String, orientation:String)
 
 object Application extends Controller with Observer with IView {
 
-  Model.add(this) // listen to model
   val gameController = new GameController
-  gameController.registerView(this)
   
+  val tui = new TUIFactory(gameController)
+  tui.start
+
+  val gui = new GUIFactory(gameController)
+  gui.start
+
+  
+  Model.add(this) // listen to model
+  
+  gameController.registerView(this)
+
+
   val newGameForm = Form( "size" -> number(min=3, max=10) )
   
   val placeShipForm = Form( 
