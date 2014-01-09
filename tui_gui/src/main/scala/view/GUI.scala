@@ -7,20 +7,17 @@ import de.htwg.scala.solitairebattleship.util.Orientation
 import scala.swing._
 import scala.swing.event.ButtonClicked
 import com.sun.java.util.jar.pack.Package
+import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
 
 class GUI(controller:GameController) extends swing.Frame with Observer with IView{
-  var model:Game = Model.game
   Model.add(this)
   controller.registerView(this)
   
-  val TextFieldSize = new TextField("5")
+  val SizeSelection = new ComboBox("3"::"4"::"5"::"6"::"7"::"8"::"9"::"10"::Nil)
   val ButtonNewGame = new Button("New Game")
   val ButtonShowSolution = new Button("Show Solution")
   val state = new Label("")
-  
-  var selected = -1;
-  var startPos:Tuple2[Int,Int] = (-1,-1) 
-  
+    
   resizable = false
   contents = controlPanel(null)
   
@@ -29,36 +26,38 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
 
   reactions += {
       	case ButtonClicked(ButtonNewGame) => {
-      		val s:Int = TextFieldSize.text.toInt
-      		state.text = "new Game with size: " + s      		      		
-      		controller.newGame(s)  
+      		val s:Int = SizeSelection.selection.item.toInt 
+      		state.text = "new game"
+      		controller.newGame(s)
+      		GUIPlaceShip.reset      		
       	}
       	case ButtonClicked(ButtonShowSolution) => {
-      		state.text = "ShowSolution"
-      		controller.showSolution
+      		if(Model.game != null)controller.showSolution
       	}
       	case ButtonClicked(_) => { println("clicked any button but not a special button?")}
       }   
     
   
   def update = {
-    model = Model.game
-    if(Model.game.gameGrid != null) contents = controlPanel(Model.game.gameGrid)
+    if(Model.game != null)
+    {
+      if(Model.game.gameGrid != null) contents = controlPanel(Model.game.gameGrid)
+    }
   }
   
   def showGameFinished {
-    state.text = "Finished"
+    state.text = "Congratulations!"
     update
   }
   
   def showValidationResult {
-     state.text = "Validation"
-     update
+    state.text = "Not a valid solution"
+    update
   }
   
   def showSolution {
-     state.text = "Solution"
-     contents = controlPanel(Model.game.solution)
+    state.text = "Solution"
+    if(Model.game!= null) contents = controlPanel(Model.game.solution)
   }
   
   def gridField(grid:IGrid):GridPanel = {
@@ -89,20 +88,20 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
   		new swing.BorderPanel{
     		add(new swing.GridPanel(1,3)
     		{	
-    			contents += TextFieldSize
+    			contents += SizeSelection
     			contents += ButtonNewGame
     			contents += ButtonShowSolution
     		} ,swing.BorderPanel.Position.North)
     		
         if(grid != null) add(gridField(grid), BorderPanel.Position.Center)
-        if(model != null)  add(shipPanel,BorderPanel.Position.West)
+        if(Model.game != null)  add(shipPanel,BorderPanel.Position.West)
     	add(state, BorderPanel.Position.South)
     	}   
   
     }
   
   def shipPanel:GridPanel = {
-    val ships = model.getUnplacedShips
+    val ships = Model.game.getUnplacedShips
     new ShipSelectionPanel(ships,this)
   }
   
@@ -110,7 +109,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
   private def emptyField = {new Label(){background = java.awt.Color.WHITE}}
   
   private def clmSumField(column:Int) = { 
-    new Label(model.solution.getColumnSum(column).toString){
+    new Label(Model.game.solution.getColumnSum(column).toString){
         horizontalAlignment = Alignment.Center
         verticalAlignment = Alignment.Center
         if (Model.game.getUnplacedShips.isEmpty){
@@ -121,7 +120,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
     }
   
   private def rowSumField(row:Int) = {
-    new Label(model.solution.getRowSum(row).toString ){
+    new Label(Model.game.solution.getRowSum(row).toString ){
         horizontalAlignment = Alignment.Center
         verticalAlignment = Alignment.Center
         if (Model.game.getUnplacedShips.isEmpty){
@@ -143,68 +142,13 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
   }
   
   def selectShip(id:Int) = {
+    GUIPlaceShip.selectShip(id)
     state.text = "ship selected: " + id
-    selected = id
-    startPos = (-1,-1)
   }
   
   
   def placeShip(x:Int,y:Int):Unit = {
-    var theShip:Ship = null
-    if(selected >= 0) theShip = model.getShipWithID(selected)
-    else{
-      state.text = "Select a ship."
-      return
-    }
-    
-    val size:Int = model.gridSize
-    
-    if (startPos._1 < 0 || startPos._1 > size || startPos._2 < 0 || startPos._2 > size){
-    	state.text = "1. click x: " + x +" y: " + y
-    	startPos = (x,y)
-    }
-    else{
-    	if(x <0 || y < 0 || x > size || y > size )
-    		throw new IllegalArgumentException()
-    	state.text = "2. click x: " + x +" y: " + y
-    	
-    	var or = Orientation.Horizontal  
-    	
-    	//vertical ship
-    	if (startPos._1 == x){
-    		val length = Math.abs(startPos._2 - y) +1
-    		if (length != theShip.size) {
-          state.text = ("length not matching")
-          return 
-        }
-    		or = Orientation.Vertical
-    	}
-    	//horizontal ship
-    	else if ( startPos._2 == y) {
-    		val length = Math.abs(startPos._1 - x)+1
-    		if (length != theShip.size) {
-          state.text = ("length not matching")
-          return
-        }
-    		or = Orientation.Horizontal
-    	}
-      //user tried to place diagonal
-    	else {
-    	  state.text = "not a valid position"
-    	  startPos = (-1,-1)
-    	  return
-    	}
-    	
-    	var tmpX = startPos._1
-    	var tmpY = startPos._2
-    	if (startPos._1 > x) tmpX = x
-    	if (startPos._2 > y) tmpY = y
-    	
-    	model.placeShip(theShip, tmpX, tmpY, or)
-    	state.text = "ship Placed x:" + x + " y:"  + y +" Orientation:"+ or
-    	startPos = (-1,-1)
-    }
-      
+    state.text = GUIPlaceShip.setPos(x, y, controller) 
   }
   
   

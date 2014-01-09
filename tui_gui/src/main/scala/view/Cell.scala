@@ -1,6 +1,7 @@
 package de.htwg.scala.solitairebattleship.view
 
 import scala.swing._
+import de.htwg.scala.solitairebattleship.model.Model;
 
 class Cell(x:Int, y:Int, isEmpty:Boolean, theGUI:GUI)  extends Button {
   
@@ -25,8 +26,8 @@ class Cell(x:Int, y:Int, isEmpty:Boolean, theGUI:GUI)  extends Button {
 	      if(isEmpty)
 	    	  theGUI.placeShip(x, y)
 	      else{
-	        val ship = theGUI.model.gameGrid.getCell(x, y)
-	        theGUI.model.removeShip(ship)
+	        val ship = Model.game.gameGrid.getCell(x, y)
+	        Model.game.removeShip(ship)
 	      }
 	    }
 	}
