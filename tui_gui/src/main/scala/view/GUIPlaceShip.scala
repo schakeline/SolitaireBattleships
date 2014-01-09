@@ -28,7 +28,7 @@ object GUIPlaceShip {
       var start = getStart(startPos._1, startPos._2, x, y)
       var end = getEnd(startPos._1, startPos._2, x, y)
       var or = Orientation.Horizontal;
-      val theShip = Model.game.getShipWithID(selected)
+      val theShip = Model.game.get.getShipWithID(selected)
       
       if(start._1 == end._1)  {
         if(checkLength(start._2,end._2, theShip) == false){ 

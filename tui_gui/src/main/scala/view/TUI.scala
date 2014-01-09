@@ -19,27 +19,28 @@ class TUI(val controller:GameController) extends Observer with IView {
   
 
   def showGameFinished {
-    printGrid(Model.game.gameGrid, true)
+    printGrid(Model.game.get.gameGrid, true)
     printGratualtion
   }
   def showValidationResult {
-    printGrid(Model.game.gameGrid, true)
+    printGrid(Model.game.get.gameGrid, true)
     printInfo(inputCommands)
   }
 
   def showSolution {
     println(colorYellow("\n- - - SOLUTION - - -\n"))
-    printGrid(Model.game.solution)
+    printGrid(Model.game.get.solution)
     println("")
   }
 
   def update {
-    if (Model.game != null) {
-      printGrid(Model.game.gameGrid)
-      printUnplacedShips
-      printInfo(inputCommands)
-    } else {
-      printInfo(askForGridSize)
+    Model.game match { 
+      case Some(game) => {
+        printGrid(game.gameGrid)
+        printUnplacedShips
+        printInfo(inputCommands)
+      } 
+      case _ => {printInfo(askForGridSize)}
     }
   }
 
@@ -71,7 +72,7 @@ class TUI(val controller:GameController) extends Observer with IView {
   private def gridRows(g:IGrid, showValidation:Boolean) = {
     
     var collisions:List[Tuple2[Int,Int]] = Nil
-    if (showValidation) collisions = Model.game.getCollisions
+    if (showValidation) collisions = Model.game.get.getCollisions
 
     var rows = ""
     var size = g.size
@@ -96,7 +97,7 @@ class TUI(val controller:GameController) extends Observer with IView {
 
   private def columnSumRow(g:IGrid, showValidation:Boolean) = {
     var sums = ""
-    for (x <- 0 until Model.game.gameGrid.size) {
+    for (x <- 0 until Model.game.get.gameGrid.size) {
       sums += (getColoredColumnSum(x, g.getColumnSum(x), showValidation) + " ")
     }
     sums
@@ -104,7 +105,7 @@ class TUI(val controller:GameController) extends Observer with IView {
   
   private def getColoredRowSum(row:Int, sum:Int, showValidation:Boolean) = {
     if (showValidation) {
-      if (Model.game.validateRowSum(row)) colorGreen(sum.toString)
+      if (Model.game.get.validateRowSum(row)) colorGreen(sum.toString)
       else colorRed(sum.toString)
     }
     else sum.toString
@@ -112,7 +113,7 @@ class TUI(val controller:GameController) extends Observer with IView {
 
   private def getColoredColumnSum(col:Int, sum:Int, showValidation:Boolean) = {
     if (showValidation) {
-      if (Model.game.validateColumnSum(col)) colorGreen(sum.toString)
+      if (Model.game.get.validateColumnSum(col)) colorGreen(sum.toString)
       else colorRed(sum.toString)
     }
     else sum.toString
@@ -127,7 +128,7 @@ class TUI(val controller:GameController) extends Observer with IView {
   */
   private def printUnplacedShips {
     var output = "## Unplaced ships"
-    var ships:List[Ship] = Model.game.getUnplacedShips
+    var ships:List[Ship] = Model.game.get.getUnplacedShips
     var tmpSize = 0
     for (s <- ships) {
       if (tmpSize != s.size){ 
@@ -157,7 +158,8 @@ class TUI(val controller:GameController) extends Observer with IView {
         controller.newGame(x.slice(2,x.length).toInt)
       }
       case _ => {
-        if (Model.game != null) {
+        Model.game match {
+          case Some(game) => {
           input.toList.filter(c => c != ' ') match {
           case 'M' :: 'V' :: ship :: column :: row :: orientation :: Nil => {
             controller.placeShip( (ship.toInt - '0'.toInt),
@@ -170,9 +172,10 @@ class TUI(val controller:GameController) extends Observer with IView {
           }
           case _ => printError("Wrong Input!")
           }
-        } else {
+        } case _ => {
         printError(askForGridSize)
         }
+      }
       }
       }
     }

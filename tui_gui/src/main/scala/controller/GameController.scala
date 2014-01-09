@@ -18,20 +18,20 @@ class GameController {
     } else {
       val ships:List[Ship] = ShipFactory.getShips(gridSize)
       val grid = new GameGenerator(ships, gridSize).generateGrid
-      Model.game = new Game(ships, grid)
+      Model.game = Some(new Game(ships, grid))
     }
   }
 
   def placeShip(id:Int, x:Int, y:Int, orientation:Orientation) {
     // get ship
-    var ship = Model.game.getShipWithID(id) // return type is Option[Ship]
-    Model.game.placeShip(ship, x, y, orientation) // throws exception if no ship found
+    var ship = Model.game.get.getShipWithID(id) // return type is Option[Ship]
+    Model.game.get.placeShip(ship, x, y, orientation) // throws exception if no ship found
     
-    if (Model.game.getUnplacedShips.isEmpty) {
+    if (Model.game.get.getUnplacedShips.isEmpty) {
       // check if valid
-      if (Model.game.isValid) {
+      if (Model.game.get.isValid) {
         views.foreach(v => v.showGameFinished)
-        Model.game = null
+        Model.game = None
       }
       else views.foreach(v => v.showValidationResult)
     }
@@ -39,13 +39,13 @@ class GameController {
 
   def removeShip(id:Int) {
     // get ship
-    var ship = Model.game.getShipWithID(id) // return type is Option[Ship]
-    Model.game.removeShip(ship) // throws exception if no ship found
+    var ship = Model.game.get.getShipWithID(id) // return type is Option[Ship]
+    Model.game.get.removeShip(ship) // throws exception if no ship found
   }
 
   def showSolution {
     views.foreach(v => v.showSolution)
-    Model.game = null
+    Model.game = None
   }
 
 }
