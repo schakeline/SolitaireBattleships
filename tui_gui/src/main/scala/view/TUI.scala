@@ -84,9 +84,9 @@ class TUI(val controller:GameController) extends Observer with IView {
           case x if (x == size+1) => getColoredRowSum(y, g.getRowSum(y), showValidation) + "\n"
           case _ => {
             var s:Ship = g.getCell(x-1, y)
-            if (s == null) "~|"
-            else if (collisions.contains((x-1,y))) colorRed(s.id.toString) + "|"
-            else s.id + "|"
+            if (s == null) { "~|" }
+            else if (collisions.contains((x-1,y))) { colorRed(s.id.toString) + "|" }
+            else { s.id + "|" }
           }
         }
         rows += field

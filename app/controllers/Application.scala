@@ -21,10 +21,10 @@ case class PlaceShipData(id: Int, x: String, y:String, orientation:String)
 object Application extends Controller with Observer with IView {
 
   val gameController = new GameController
-  
+  /*
   val tui = new TUIFactory(gameController)
   tui.start
-
+  */
   val gui = new GUIFactory(gameController)
   gui.start
 
@@ -50,7 +50,7 @@ object Application extends Controller with Observer with IView {
 
   val possibleGridSizes = (3 to 10).map(i =>i.toString).toList
 
-  var model:IGame = Model.game
+  //var model:IGame = Model.game.get
   var showValidation:Boolean = false
   var gameFinish:Boolean = false
   var errorMsg:Option[String] = None
@@ -66,7 +66,7 @@ object Application extends Controller with Observer with IView {
       size => {
         //Model create game
         gameController.newGame(size)
-        Redirect("/playGame")//Ok( views.html.playGame(model, placeShipForm, removeShipForm, None, false) )
+        Redirect("/playGame")
       }
     )
   }
@@ -74,14 +74,14 @@ object Application extends Controller with Observer with IView {
   def playGame = Action {
     var tmpErrorMsg = errorMsg
     errorMsg = None // reset global errorMsg
-    Ok( views.html.playGame(model, placeShipForm, removeShipForm, tmpErrorMsg, showValidation) )
+    Ok( views.html.playGame(Model.game.get, placeShipForm, removeShipForm, tmpErrorMsg, showValidation) )
   }
 
   def placeShip = Action {
     implicit request =>
       placeShipForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(views.html.playGame(model, placeShipForm, removeShipForm, Some("Bad Request"), false))
+          BadRequest(views.html.playGame(Model.game.get, placeShipForm, removeShipForm, Some("Bad Request"), false))
         },
         placeShipData => {
           val orientation = if(placeShipData.orientation == "Horizontal") Orientation.Horizontal else Orientation.Vertical
@@ -103,9 +103,9 @@ object Application extends Controller with Observer with IView {
           
           if (gameFinish) {
             gameFinish = false
-            Redirect("/gameFinished") //Ok(views.html.gameFinished())
+            Redirect("/gameFinished")
           } else {
-            Redirect("/playGame")//Ok( views.html.playGame(model, placeShipForm, removeShipForm, errorMsg, showValidation) )
+            Redirect("/playGame")
           }
         }
       )
@@ -113,17 +113,16 @@ object Application extends Controller with Observer with IView {
 
   def removeShip = Action { implicit request =>
     removeShipForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.playGame(model, placeShipForm, removeShipForm, Some("Illegal argument"), false)),
+      errors => BadRequest(views.html.playGame(Model.game.get, placeShipForm, removeShipForm, Some("Illegal argument"), false)),
       id => {
         //Model create game
-        //var errorMsg:Option[String] = None
         try {
           gameController.removeShip(id)
         }
         catch {
           case e:IllegalArgumentException => 
             errorMsg = Some("Illegal argument")
-            BadRequest( views.html.playGame(model, placeShipForm, removeShipForm, errorMsg, false) )
+            BadRequest( views.html.playGame(Model.game.get, placeShipForm, removeShipForm, errorMsg, false) )
         }
         Redirect("/playGame")
       }
@@ -136,14 +135,14 @@ object Application extends Controller with Observer with IView {
 
   // Observer methods
   def update {
-    model = Model.game
+    //model = Model.game.get
     showValidation = false
   }
 
 
   // IView methods
   def solution = Action {
-    Ok(views.html.showSolution(model.solution))
+    Ok(views.html.showSolution(Model.game.get.solution))
   }
 
   def showSolution {

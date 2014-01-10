@@ -4,7 +4,7 @@ import de.htwg.scala.solitairebattleship.model._
 
 object ShipFactory {
 
-  def getShips(gridSize:Int) = {
+  def getShips(gridSize:Int):List[Ship] = {
     gridSize match {
       case 10 => ships10by10
       case 9  => (new Ship(7,1)) :: ships8by8  
@@ -21,7 +21,7 @@ object ShipFactory {
   private def ships10by10:List[Ship] = {
     var ships:List[Ship] = Nil
     for (i <- 0 until 10) {
-      var s = i match {
+      val s = i match {
         case x if x < 4 => 1
         case x if x < 7 => 2
         case x if x < 9 => 3
@@ -35,7 +35,7 @@ object ShipFactory {
   private def ships8by8:List[Ship] = {
     var ships:List[Ship] = Nil
     for (i <- 0 until 7) {
-      var s = i match {
+      val s = i match {
         case x if x < 3 => 1
         case x if x < 5 => 2
         case x if x < 6 => 3
@@ -49,7 +49,7 @@ object ShipFactory {
     private def ships6by6:List[Ship] = {
     var ships:List[Ship] = Nil
     for (i <- 0 until 6) {
-      var s = i match {
+      val s = i match {
         case x if x < 3 => 1
         case x if x < 5 => 2
         case _ => 3
