@@ -17,12 +17,12 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
     ids.sorted
   }
   
-  def generateGrid():Grid = 
-  {
+  def generateGrid():Grid = {
     placeShips(shipIDs, grid, allShips)
     return solutions(0)
   }
-  
+
+  /*
   def printGrid(theGrid:Grid) = {
     for( x <- 0 until theGrid.size){
       for(y <- 0 until theGrid.size){
@@ -32,53 +32,56 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
     }
       
   }
+  */
   
+  def placeShips(shipIDs:List[Int], grid:Grid, ships:List[Ship]):Unit = {
   
-  def placeShips(shipIDs:List[Int], grid:Grid, ships:List[Ship]):Unit ={
-  
-  if(solutionFound) return
-    
-  var theShip:Ship = null 
-    //every id is set
-    if(shipIDs.size==0){
-      solutions = grid :: solutions
-      solutionFound = true
-    }
-    else{
-      theShip = ships.filter(s => s.id == shipIDs(0))(0)
+    if(!solutionFound) {
       
-      //generate a list with all positions
-      var positions = getPossiblePositions(grid.size, theShip.size)
-    
-      val size = positions.size
-      for (i <- 0 until size) {
-        var tmpGrid = grid.copy()
-        val tmpPos = positions(rand.nextInt(size - i))
-        positions = positions.filter(p => p != tmpPos)
-      
-        //iterate over all positions
-        var pos:Position = null;
-        if (tmpPos._3 == 0)
-          pos = new Position(tmpPos._1,tmpPos._2,Horizontal)
-        else pos = new Position(tmpPos._1,tmpPos._2,Vertical)
-                   
-        if (CellsAreEmpty(pos,theShip,tmpGrid)){       
-          var tmpIDs:List[Int] = Nil        
-            
-          //the Cell is empty so place the ship         
-          tmpGrid = tmpGrid.placeShip(theShip, pos)         
-            
-          if (Validator.validateNeighborhood(tmpGrid).isEmpty == false){
-            //Bad Neighborhood, we need to remove the ship
-            tmpGrid = tmpGrid.removeShip(theShip)
-            tmpIDs = shipIDs
+      var theShip:Ship = null 
+        //every id is set
+        if(shipIDs.size == 0) {
+          solutions = grid :: solutions
+          solutionFound = true
+        }
+        else {
+          theShip = ships.filter(s => s.id == shipIDs(0))(0)
+          
+          //generate a list with all positions
+          var positions = getPossiblePositions(grid.size, theShip.size)
+        
+          val size = positions.size
+          for (i <- 0 until size) {
+            var tmpGrid = grid.copy()
+            val tmpPos = positions(rand.nextInt(size - i))
+            positions = positions.filter(p => p != tmpPos)
+          
+            //iterate over all positions
+            var pos:Position = null;
+            if (tmpPos._3 == 0) {
+              pos = new Position(tmpPos._1,tmpPos._2,Horizontal)
+            }
+            else {
+              pos = new Position(tmpPos._1,tmpPos._2,Vertical)
+            }
+                       
+          if (CellsAreEmpty(pos,theShip,tmpGrid)){       
+            var tmpIDs:List[Int] = Nil        
+              
+            //the Cell is empty so place the ship         
+            tmpGrid = tmpGrid.placeShip(theShip, pos)         
+              
+            if (Validator.validateNeighborhood(tmpGrid).isEmpty == false){
+              //Bad Neighborhood, we need to remove the ship
+              tmpGrid = tmpGrid.removeShip(theShip)
+              tmpIDs = shipIDs
+            }
+            else{
+              //ship is placed so place the next ship. not set theShip twice  
+              var tmpIDs = shipIDs.filter(_ != theShip.id) 
+              placeShips(tmpIDs,tmpGrid,ships) // recursive call
+            } 
           }
-          else{
-            //ship is placed so place the next ship. not set theShip twice  
-            println("Placed")
-            var tmpIDs = shipIDs.filter(_ != theShip.id) 
-            placeShips(tmpIDs,tmpGrid,ships)
-          } 
         }
       }
     }

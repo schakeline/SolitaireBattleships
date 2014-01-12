@@ -6,7 +6,7 @@ import de.htwg.scala.solitairebattleship.util.Position
 
 
 class Grid (val size:Int) extends IGrid {
-  private val gridArray = Array.ofDim[Option[Ship]](size, size) //why is this initialized with null?
+  private val gridArray = Array.fill[Option[Ship]](size, size)(None)
   
   if (size < 2) throw new IllegalArgumentException
   
@@ -55,7 +55,6 @@ class Grid (val size:Int) extends IGrid {
         case Some(ship) => {isFree = false}
         case _ => {}
       }
-      println("x:" +f._1 + " y:"+f._2 + "isFree: " + isFree + gridArray(f._2)(f._1))
     }
     isFree
   }
