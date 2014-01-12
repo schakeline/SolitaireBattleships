@@ -55,7 +55,7 @@ class Grid (val size:Int) extends IGrid {
         case Some(ship) => {isFree = false}
         case _ => {}
       }
-      println("x:" +f._1 + " y:"+f._2 + "isFree: " + isFree + gridArray(f._2)(f._1))
+      //println("x:" +f._1 + " y:"+f._2 + "isFree: " + isFree + gridArray(f._2)(f._1))
     }
     isFree
   }
@@ -106,7 +106,7 @@ class Grid (val size:Int) extends IGrid {
   def copy():Grid = {
     var nGrid = new Grid(size)
     for(x <- 0 until size; y <- 0 until size)
-      nGrid.gridArray(x)(y) = this.getCell(x, y)
+      nGrid.gridArray(y)(x) = this.getCell(x, y)
     
     
     nGrid
