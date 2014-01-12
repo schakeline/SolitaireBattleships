@@ -1,52 +1,137 @@
-.collision, .notValid {
-  color:red;
+body {
+  text-align: center;
+  font-family: Helvetica;
+  display: table;
+  width: 99%;
 }
 
-.valid {
-  color: green;
+div.content {
+  height: auto;
+  width: 100%;
+  display: table-row;
+  padding: 10px;
+}
+
+div.left, div.center, div.right {
+  height: 100%;
+  background-color:#DEDEDE;
+  border: solid 3px black;
+  display: table-cell;
+  height: 400px;
+}
+
+div.left {
+  float:left;
+  width: 22%;
+}
+
+div.left div.ship {
+  margin:5px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0;
+}
+
+div.left div.ship span {
+  background-color:black;
+  border: solid 1px grey;
+  color: white;
+  margin: 0px;
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 12pt;
+  line-height: 20px;
+}
+
+div.left div.ship span:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+div.left div.ship span:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+div.center {
+  float:left;
+  width: 50%;
+  margin-left:2.2%;
+  margin-right:2.2%;
+}
+
+div.right {
+  float:right;
+  width: 22%;
 }
 
 td {
   text-align: center;
 }
 
-td.occupied {
-  background-color: grey;
+td.occupied, td.free, td.collision {
+  border: solid 1px grey;
+  width: 20px;
+  height: 20px;
 }
 
-.info {
-  visibility: hidden;
-  width: 0px;
-  height: 0px;
+td.occupied, td.collision {
+  background-color:black;
+  border: solid 1px grey;
+  color: white;
 }
 
-div.left, div.right {
-  width: 25%;
+td.collision, td.notValid {
+  color:red;
 }
 
-div.center {
-  text-align: center;
+td.valid {
+  color: green;
 }
+
+
+
+
 table {
   margin-left: auto;
   margin-right: auto;
 }
+
 form {
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
+  display: table;
+  width: 100%;
+  height: 50px;
+}
+
+form div {
+  display: table-row;
   width: 80%;
-  height: 30px;
 }
 
-form dl, form input {
-  float:left;
-  vertical-align: middle;
+form div dl, form div span, form div input {
+  display: table-cell;
+}
+
+form div dl dt, form div dl dd, form div dl dt label, form div dl dd select {
+  text-align:center;
   margin: 0px;
 }
 
-dt, label, dd, select {
-  float:left;
-  vertical-align: middle;
-  margin: 0px;
+form div dl dd.info {
+  visibility: hidden;
+  display: none;
+  width: 0px;
+  height: 0px;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+h4 {
+  margin-bottom: 5px;
 }

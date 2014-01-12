@@ -24,10 +24,10 @@ object Application extends Controller with Observer with IView {
   /*
   val tui = new TUIFactory(gameController)
   tui.start
-  */
+  
   val gui = new GUIFactory(gameController)
   gui.start
-
+  */
   
   Model.add(this) // listen to model
   
