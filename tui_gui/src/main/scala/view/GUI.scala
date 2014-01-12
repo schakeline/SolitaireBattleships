@@ -25,17 +25,20 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
   listenTo(ButtonShowSolution)
 
   reactions += {
-      	case ButtonClicked(ButtonNewGame) => {
-      		val s:Int = SizeSelection.selection.item.toInt 
-      		state.text = "new game"
-      		controller.newGame(s)
-      		GUIPlaceShip.reset      		
-      	}
-      	case ButtonClicked(ButtonShowSolution) => {
-      		if(Model.game != null)controller.showSolution
-      	}
-      	case ButtonClicked(_) => { println("clicked any button but not a special button?")}
-      }   
+    case ButtonClicked(ButtonNewGame) => {
+      val s:Int = SizeSelection.selection.item.toInt 
+      state.text = "new game"
+      controller.newGame(s)
+      GUIPlaceShip.reset      		
+    }
+    case ButtonClicked(ButtonShowSolution) => {
+      Model.game match {
+        case Some(grid) => controller.showSolution
+        case _ => {}
+      }
+    }
+    case ButtonClicked(_) => { println("clicked any button but not a special button?")}
+  }   
     
   
   def update:Unit = {
@@ -45,9 +48,11 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
       }
   }
   
-  def showGameFinished {
-    state.text = "Congratulations!"
-    update
+  def showGameFinished {    
+    contents = new BorderPanel{
+      add(buttonBar ,BorderPanel.Position.North)
+      add(new Label("Congratulations!"), BorderPanel.Position.South)
+    }
   }
   
   def showValidationResult {
@@ -91,21 +96,23 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
     }
   }//update
   
-  def controlPanel(optionGrid:Option[IGrid]):BorderPanel = {
-  		new swing.BorderPanel{
-    		add(new swing.GridPanel(1,3)
-    		{	
-    			contents += SizeSelection
-    			contents += ButtonNewGame
-    			contents += ButtonShowSolution
-    		} ,swing.BorderPanel.Position.North)
-    		
-        add(gridField(optionGrid), BorderPanel.Position.Center)
-        if(Model.game != null)  add(shipPanel,BorderPanel.Position.West)
-    	add(state, BorderPanel.Position.South)
-    	}   
+  def buttonBar():GridPanel = {
+   new swing.GridPanel(1,3){	
+     contents += SizeSelection
+   	 contents += ButtonNewGame
+   	 contents += ButtonShowSolution
+   }
+  }
   
-    }
+  def controlPanel(optionGrid:Option[IGrid]):BorderPanel = {
+  	new swing.BorderPanel{
+   	  add(buttonBar ,swing.BorderPanel.Position.North)
+   	  add(state, BorderPanel.Position.South)
+   	  add(gridField(optionGrid), BorderPanel.Position.Center)
+      add(shipPanel,BorderPanel.Position.West)  
+
+    }   
+  }
   
   def shipPanel:GridPanel = {
     Model.game match {
@@ -154,9 +161,10 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
   
   
   private def cell(x:Int, y:Int, grid:IGrid):Button = {
-    if(grid == null) new Cell(x,y,true, this)
-    else if(grid.getCell(x, y) == null) new Cell(x,y,true, this)
-    else { new Cell(x,y,false, this)   }
+    grid.getCell(x,y) match{
+      case Some(ship) => new Cell(x,y,false,this)
+      case _ => new Cell(x,y,true,this)
+    }
   }
   
   private def lineLabel(s:Int) = { 

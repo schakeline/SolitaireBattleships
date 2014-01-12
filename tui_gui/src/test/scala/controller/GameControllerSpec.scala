@@ -1,10 +1,9 @@
-package controller
+package de.htwg.scala.solitairebattleship.controller
 
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 import de.htwg.scala.solitairebattleship.view.IView
 import de.htwg.scala.solitairebattleship.util.Orientation
-import de.htwg.scala.solitairebattleship.controller.GameController
 import de.htwg.scala.solitairebattleship.model.Model
 
 class GameControllerSpec extends FlatSpec with Matchers {
@@ -39,9 +38,9 @@ class GameControllerSpec extends FlatSpec with Matchers {
 	  controller.newGame(3)
 	  controller.placeShip(0, 0, 0, Orientation.Horizontal)
 	  
-	  val before = Model.game.getUnplacedShips.size
+	  val before = Model.game.get.getUnplacedShips.size
 	  controller.removeShip(0)
-	  Model.game.getUnplacedShips.size should be(before + 1)
+	  Model.game.get.getUnplacedShips.size should be(before + 1)
 	}
 }
 

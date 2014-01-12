@@ -6,7 +6,7 @@ import de.htwg.scala.solitairebattleship.util.Position
 
 
 class Grid (val size:Int) extends IGrid {
-private val gridArray = Array.ofDim[Ship](size, size)
+  private val gridArray = Array.ofDim[Option[Ship]](size, size) //why is this initialized with null?
   
   if (size < 2) throw new IllegalArgumentException
   
@@ -23,6 +23,19 @@ private val gridArray = Array.ofDim[Ship](size, size)
     newGrid = newGrid.removeShip(theShip)
     
     // List with cells occupied by ship
+    var fields = getUsedCells(theShip,x,y,orientation)
+    
+    if (!newGrid.cellInGrid(fields(0)))
+      throw new ShipCollisionException("With border.")
+    else if (!newGrid.cellsFree(fields))
+      throw new ShipCollisionException("With another ship.")
+    else
+      fields.foreach(f => newGrid.gridArray(f._2)(f._1) = Some(theShip))
+
+    newGrid
+  }
+  
+  def getUsedCells(theShip:Ship, x:Int, y:Int, orientation:Orientation):List[Tuple2[Int,Int]] = {
     var fields = (x, y) :: Nil
     
     for (i <- 0 until theShip.size) {
@@ -30,19 +43,22 @@ private val gridArray = Array.ofDim[Ship](size, size)
       else fields = (x, y+i) :: fields
     }
     
-    if (!newGrid.cellInGrid(fields(0)))
-      throw new ShipCollisionException("With border.")
-    else if (!newGrid.cellsFree(fields))
-      throw new ShipCollisionException("With another ship.")
-    else
-      fields.foreach(f => newGrid.gridArray(f._2)(f._1) = theShip)
-
-    newGrid
+    fields
   }
   
   private def cellInGrid(cell:Tuple2[Int, Int]):Boolean = (cell._1 >= 0 && cell._1 < size && cell._2 >= 0 && cell._2 < size)
   
-  private def cellsFree(fields:List[Tuple2[Int, Int]]):Boolean = fields.filterNot(f => gridArray(f._2)(f._1) == null).isEmpty
+  def cellsFree(fields:List[Tuple2[Int, Int]]):Boolean = {
+    var isFree = true;
+    for(f <- fields){      
+      gridArray(f._2)(f._1) match {
+        case Some(ship) => {isFree = false}
+        case _ => {}
+      }
+      println("x:" +f._1 + " y:"+f._2 + "isFree: " + isFree + gridArray(f._2)(f._1))
+    }
+    isFree
+  }
     
   def removeShip(ship:Ship):Grid = {
     if (ship == null) throw new IllegalArgumentException
@@ -50,8 +66,10 @@ private val gridArray = Array.ofDim[Ship](size, size)
     val newGrid = this.copy()
 
     for (y <- 0 until newGrid.size; x <- 0 until newGrid.size) { 
-    if(newGrid.gridArray(y)(x) == ship)
-      newGrid.gridArray(y)(x) = null
+      newGrid.gridArray(y)(x) match {
+        case Some(s) => {if(s == ship){newGrid.gridArray(y)(x) = None}}
+        case _ => {}
+      }
     }
     newGrid
   }
@@ -59,8 +77,10 @@ private val gridArray = Array.ofDim[Ship](size, size)
   def getRowSum(row:Int):Int = {   
     var sum = 0
     for(x <- 0 until size){
-      if((gridArray(row)(x)) != null) 
-        sum += 1
+      gridArray(row)(x) match {
+        case Some(ship) => sum += 1
+        case _ => {}
+      }
     }
     sum
   }
@@ -68,25 +88,31 @@ private val gridArray = Array.ofDim[Ship](size, size)
   def getColumnSum(column:Int):Int = {
     var sum = 0
     for(y <- 0 until size){
-      if((gridArray(y)(column)) != null) 
-        sum += 1
+      gridArray(y)(column) match {
+        case Some(ship) => sum += 1
+        case _ => {}
+      }
     }
     sum
   }
   
-  def getCell(x:Int, y:Int):Ship = {
-    gridArray(y)(x)
+  def getCell(x:Int, y:Int):Option[Ship] = {
+    gridArray(y)(x) match {
+      case Some(ship) => Some(ship)
+      case _ => None
+    }
   }
 
   def copy():Grid = {
     var nGrid = new Grid(size)
     for(x <- 0 until size; y <- 0 until size)
-      nGrid.gridArray(x)(y) = this.gridArray(x)(y)
+      nGrid.gridArray(x)(y) = this.getCell(x, y)
+    
     
     nGrid
   }
   
-  def getRow(r:Int):List[Ship] = gridArray(r).toList
+  def getRow(r:Int):List[Option[Ship]] = gridArray(r).toList
   
  
 }

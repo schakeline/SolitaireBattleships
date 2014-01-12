@@ -58,9 +58,9 @@ class GridSpec extends FlatSpec with Matchers {
     g = g.placeShip(s, 0, 0, Orientation.Horizontal)
     g = g.placeShip(s, 1, 0, Orientation.Vertical)
     
-    g.getCell(0, 0) should be(null)
-    g.getCell(1, 0) should be(s)
-    g.getCell(1, 1) should be(s)
+    g.getCell(0, 0) should be(None)
+    g.getCell(1, 0) should be(Some(s))
+    g.getCell(1, 1) should be(Some(s))
   }
   
   "A ship" should "have a position" in {
@@ -68,10 +68,10 @@ class GridSpec extends FlatSpec with Matchers {
     var g = new Grid(8)
     
     g = g.placeShip(s, 1, 0, Orientation.Horizontal)
-    g.getCell(1, 0) should be(s)
+    g.getCell(1, 0).get should be(s)
     
     g = g.placeShip(s, 1, 0, Orientation.Horizontal)
-    g.getCell(1,0) should be(s)
+    g.getCell(1,0).get should be(s)
   }
   
   "A ship" should "be removable" in {
@@ -79,10 +79,10 @@ class GridSpec extends FlatSpec with Matchers {
     var g = new Grid(8)
     
     g = g.placeShip(s, 1, 0, Orientation.Horizontal)
-    g.getCell(1,0) should be(s)
+    g.getCell(1,0).get should be(s)
     
     g = g.removeShip(s)
-    g.getCell(1,0) should be(null)
+    g.getCell(1,0) should be(None)
   }
   
   "The RowSum of an Empty Grid" should "be 0" in {
@@ -132,9 +132,15 @@ class GridSpec extends FlatSpec with Matchers {
     var g2 = g.copy
     g2 = g2.placeShip(s2, 2, 2, Orientation.Horizontal)
     
-    g.getCell(0,0) should be(s1)
-    g.getCell(2,2) should be(null)
-    g2.getCell(0,0) should be(s1)
-    g2.getCell(2, 2) should be(s2)
+    g.getCell(0,0) should be(Some(s1))
+    g.getCell(2,2) should be(None)
+    g2.getCell(0,0) should be(Some(s1))
+    g2.getCell(2, 2) should be(Some(s2))
+  }
+  
+  "In a new grid no ship" should "be placed" in {
+    val g = new Grid(3)
+    
+    g.getCell(0,0) should be(None)
   }
 }

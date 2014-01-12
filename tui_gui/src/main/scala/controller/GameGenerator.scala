@@ -48,9 +48,7 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
       theShip = ships.filter(s => s.id == shipIDs(0))(0)
       
       //generate a list with all positions
-      var positions:List[Tuple3[Int,Int,Int]] = Nil
-      for(x <- 0 until grid.size -theShip.size + 1; y <- 0 until grid.size-theShip.size + 1; o <- 0 to 1)
-        positions = new Tuple3(x,y,o) :: positions
+      var positions = getPossiblePositions(grid.size, theShip.size)
     
       val size = positions.size
       for (i <- 0 until size) {
@@ -63,13 +61,11 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
         if (tmpPos._3 == 0)
           pos = new Position(tmpPos._1,tmpPos._2,Horizontal)
         else pos = new Position(tmpPos._1,tmpPos._2,Vertical)
-                    
-        //print("pos:" + pos.x + "\\" + pos.y + "\t ship: " +theShip.id + " | ")
-          
-        if (CellsAreEmpty(pos,theShip,grid)){       
+                   
+        if (CellsAreEmpty(pos,theShip,tmpGrid)){       
           var tmpIDs:List[Int] = Nil        
             
-          //the Cell is empty so place the ship
+          //the Cell is empty so place the ship         
           tmpGrid = tmpGrid.placeShip(theShip, pos)         
             
           if (Validator.validateNeighborhood(tmpGrid).isEmpty == false){
@@ -79,6 +75,7 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
           }
           else{
             //ship is placed so place the next ship. not set theShip twice  
+            println("Placed")
             var tmpIDs = shipIDs.filter(_ != theShip.id) 
             placeShips(tmpIDs,tmpGrid,ships)
           } 
@@ -87,21 +84,19 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
     }
   } 
   
-  private def CellsAreEmpty(position:Position, ship:Ship, grid:Grid):Boolean = {
-    var content:Ship = null;
-    for(i <- 0 until ship.size)
-    {
-      //the ship is not in the grid
-      if(position.x +i >= grid.size || position.y +i >= grid.size)
-        return false
-      
-      if(position.orientation == Horizontal)
-         content = grid.getCell(position.x +i, position.y)
-      else content = grid.getCell(position.x,position.y + i)
-      
-      if(content != null) return false
-    }
-    return true;
+  private def getPossiblePositions(girdSize:Int, shipSize:Int):List[Tuple3[Int,Int,Int]] = {
+    var positions:List[Tuple3[Int,Int,Int]] = Nil
+      for(x <- 0 until girdSize - shipSize + 1;
+          y <- 0 until girdSize - shipSize + 1;
+          o <- 0 to 1){
+        positions = new Tuple3(x,y,o) :: positions
+      }
+    positions
+  }
+  
+  private def CellsAreEmpty(position:Position, ship:Ship, grid:Grid):Boolean = {        
+    val fields = grid.getUsedCells(ship,position.x,position.y,position.orientation)
+    grid.cellsFree(fields)
   }
  
 }

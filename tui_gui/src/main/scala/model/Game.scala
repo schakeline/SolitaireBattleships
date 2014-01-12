@@ -16,7 +16,7 @@ class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
    */
   def gameGrid:IGrid = {
 
-    var gridArray:List[List[Ship]] = Nil
+    var gridArray:List[List[Option[Ship]]] = Nil
     for (i <- gridSize-1 to 0 by -1) { // reverse order because of list speed
       gridArray = userGrid.getRow(i) :: gridArray
     }
@@ -53,10 +53,9 @@ class Game(private val ships:List[Ship], val solution:IGrid) extends IGame {
     var placedShips = Set[Ship]()
 
     for (i <- 0 until userGrid.size; j <- 0 until userGrid.size) {
-      var ship:Ship = userGrid.getCell(i, j)
-
-      if (ship != null) {
-        placedShips = (placedShips+ship)
+      userGrid.getCell(i, j) match{
+        case Some(ship) => {placedShips = (placedShips + ship)}
+        case _ => {}
       }
     }
     placedShips.toList.sortBy(x => x.id)

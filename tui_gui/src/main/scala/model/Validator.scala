@@ -12,43 +12,50 @@ object Validator {
     for (x <- 0 until theGrid.size; y <- 0 until theGrid.size){
       var hotSpot = theGrid.getCell(x,y)
       
-      if (hotSpot != null){
-         
-        if (x < theGrid.size -1 ){
-          var eastNeighbor = theGrid.getCell(x+1,y)
-          if (CollisionBetween(hotSpot, eastNeighbor)) {
-            collisions = (x,y) :: (x+1,y) :: collisions
-          }
-        }
-         
-        if (y < theGrid.size -1 ) {
-          var southNeighbor = theGrid.getCell(x,y+1)
-          if (CollisionBetween(hotSpot, southNeighbor)){
-            collisions = (x,y) :: (x,y+1) :: collisions
-          }
-        }
-         
-        if (x < theGrid.size -1 && y < theGrid.size -1){
-          var southEastNeighbor = theGrid.getCell(x+1,y+1)
-          if (CollisionBetween(hotSpot, southEastNeighbor)){
-            collisions = (x,y) :: (x+1,y+1) :: collisions
-          }
-        }
-           
-        if (x >= 1 && y < theGrid.size - 1) {
-          var southWestNeighbor = theGrid.getCell(x - 1, y + 1)
-          if (CollisionBetween(hotSpot,southWestNeighbor)){
-            collisions = (x,y) :: (x-1,y+1) :: collisions
-          }
-        }    
-      }
+	        if (x < theGrid.size -1 ){	          
+	          var eastNeighbor = theGrid.getCell(x+1,y)
+	          if (CollisionBetween(hotSpot, eastNeighbor)) {
+	            collisions = (x,y) :: (x+1,y) :: collisions
+	          }
+	        }
+	         
+	        if (y < theGrid.size -1 ) {
+	          var southNeighbor = theGrid.getCell(x,y+1)
+	          if (CollisionBetween(hotSpot, southNeighbor)){
+	            collisions = (x,y) :: (x,y+1) :: collisions
+	          }
+	        }
+	         
+	        if (x < theGrid.size -1 && y < theGrid.size -1){
+	          var southEastNeighbor = theGrid.getCell(x+1,y+1)
+	          if (CollisionBetween(hotSpot, southEastNeighbor)){
+	            collisions = (x,y) :: (x+1,y+1) :: collisions
+	          }
+	        }
+	           
+	        if (x >= 1 && y < theGrid.size - 1) {
+	          var southWestNeighbor = theGrid.getCell(x - 1, y + 1)
+	          if (CollisionBetween(hotSpot,southWestNeighbor)){
+	            collisions = (x,y) :: (x-1,y+1) :: collisions
+	          }
+	        }        
     }
     collisions
   }
 
-  private def CollisionBetween(hotspot:Ship, neighbor:Ship):Boolean = {
-    if(hotspot != neighbor && neighbor != null) return true
-    else false
+  private def CollisionBetween(hotspot:Option[Ship], neighbor:Option[Ship]):Boolean = {
+    hotspot match {
+      case Some(ship) => { 
+        neighbor match{
+          case Some(shipN) => {
+            if(ship != neighbor) true
+            else false
+          }
+          case _ => false
+        } 
+      }
+      case _ => false
+    }
   }
   
 }
