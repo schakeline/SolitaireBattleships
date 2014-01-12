@@ -21,10 +21,10 @@ package de.htwg.scala.solitairebattleship.controller {
 		  val gen = new GameGenerator(ships,3)
 		  val game =  gen.generateGrid
 		  
-		  game.getCell(0, 0) shouldNot be(null)
-		  game.getCell(2, 0) shouldNot be(null)
-		  game.getCell(0, 2) shouldNot be(null)
-		  game.getCell(2, 2) shouldNot be(null)
+		  game.getCell(0, 0) shouldNot be(None)
+		  game.getCell(2, 0) shouldNot be(None)
+		  game.getCell(0, 2) shouldNot be(None)
+		  game.getCell(2, 2) shouldNot be(None)
 		}
 		
 		"Place a ship of size 4 in a Grid(4)" should "no be possible" in {

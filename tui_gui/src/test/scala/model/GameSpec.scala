@@ -74,20 +74,25 @@ class GameSpec extends FlatSpec with Matchers {
   }
   
   "Remove a ship" should "be possible" in {
-    val ships = new Ship(0,1) :: new Ship(1,1) :: Nil
+    val ships = new Ship(0,2) :: new Ship(1,1) :: Nil
     var solution = new Grid(4)
     
-    solution = solution.placeShip(ships(0),0,0,Orientation.Horizontal)
+    solution = solution.placeShip(ships(0),1,2,Orientation.Horizontal)
     solution = solution.placeShip(ships(1),3,3,Orientation.Horizontal)
     
     val newGame = new Game(ships,solution)
-    newGame.placeShip(ships(0), 0, 0, Orientation.Horizontal)
+    newGame.placeShip(ships(0), 1, 2, Orientation.Horizontal)
+    newGame.placeShip(ships(1), 0, 0, Orientation.Horizontal)
+    newGame.getUnplacedShips.size should be(0)
     
+    newGame.gameGrid.getCell(1, 2).get should be(ships(0))
+    newGame.gameGrid.getCell(2, 2).get should be(ships(0))
+    
+    newGame.removeShip(ships(1))
     newGame.getUnplacedShips.size should be(1)
     
-    newGame.removeShip(ships(0))
-    
-    newGame.getUnplacedShips.size should be(2)
+    newGame.gameGrid.getCell(1, 2).get should be(ships(0))
+    newGame.gameGrid.getCell(2, 2).get should be(ships(0))
   }
   
   "gameGrid" should "be an IGrid with corrct sums" in {

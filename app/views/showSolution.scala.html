@@ -24,10 +24,9 @@
       <tr>
         <td>@((y+65).toChar)</td>
         @for(x <- 0 until solution.size) {  
-          @if(solution.getCell(x, y) != null) {
-            <td x="@((x+65).toChar)" y="@((y+65).toChar)" class="occupied">@solution.getCell(x, y).id.toString</td>  
-          } else {
-            <td x="@((x+65).toChar)" y="@((y+65).toChar)" class="free">~</td>
+          @solution.getCell(x, y) match {
+            case Some(ship) => {<td x="@((x+65).toChar)" y="@((y+65).toChar)" class="occupied">@ship.id.toString</td>}
+            case _ => {<td x="@((x+65).toChar)" y="@((y+65).toChar)" class="free">~</td>}
           }
         }
         <td>@(solution.getRowSum(y).toString)</td>

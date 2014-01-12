@@ -9,9 +9,19 @@ import de.htwg.scala.solitairebattleship.util.Orientation;
 	class ValidatorSpec extends FlatSpec with Matchers{
 		
 	  "An empty Grid "should "be valid" in {
-		  val g:IGrid = new Grid(2)
+		  val g:IGrid = new Grid(4)
 		  val res = Validator.validateNeighborhood(g)
 		  res.isEmpty should be(true)
+	  }
+	  
+	  "Validate the neighborhood with one ship" should "be true" in {
+	    val g = new Grid(4)
+	    val s = new Ship(1,2)
+	    
+	    g.placeShip(s, 0,0,Orientation.Horizontal)
+	    
+	    val res = Validator.validateNeighborhood(g)
+	    res.isEmpty should be(true)
 	  }
 	  
 	  
