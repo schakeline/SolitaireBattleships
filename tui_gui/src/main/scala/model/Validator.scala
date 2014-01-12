@@ -48,7 +48,9 @@ object Validator {
       case Some(ship) => { 
         neighbor match{
           case Some(shipN) => {
-            if(ship != neighbor) true
+            if(ship != shipN){             
+              true
+            }
             else false
           }
           case _ => false
