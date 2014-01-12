@@ -65,17 +65,21 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
         if (CellsAreEmpty(pos,theShip,tmpGrid)){       
           var tmpIDs:List[Int] = Nil        
             
+          //println("x: " + pos.x + "y: " + pos.y+ pos.orientation+ " ship: "+ theShip.id)
+          //printGrid(tmpGrid)
+          
           //the Cell is empty so place the ship         
           tmpGrid = tmpGrid.placeShip(theShip, pos)         
             
           if (Validator.validateNeighborhood(tmpGrid).isEmpty == false){
             //Bad Neighborhood, we need to remove the ship
+            //println("remove it becouse of: " + Validator.validateNeighborhood(tmpGrid))
             tmpGrid = tmpGrid.removeShip(theShip)
             tmpIDs = shipIDs
           }
           else{
             //ship is placed so place the next ship. not set theShip twice  
-            println("Placed")
+            //println("Placed")
             var tmpIDs = shipIDs.filter(_ != theShip.id) 
             placeShips(tmpIDs,tmpGrid,ships)
           } 
