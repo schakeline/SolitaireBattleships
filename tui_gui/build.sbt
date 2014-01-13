@@ -20,4 +20,4 @@ libraryDependencies ++= Seq(
   //"play" % "play_2.10" % "2.1-SNAPSHOT"
 )
 
-//org.scalastyle.sbt.ScalastylePlugin.Settings
+org.scalastyle.sbt.ScalastylePlugin.Settings

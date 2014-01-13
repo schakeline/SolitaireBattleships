@@ -7,7 +7,7 @@ import de.htwg.scala.solitairebattleship.util.Orientation
 import de.htwg.scala.solitairebattleship.util.Orientation
 
 class GridSpec extends FlatSpec with Matchers {
-	
+
   "Creating a grid with size < 2" should "throw an IllegalArgumentException" in {
     an [IllegalArgumentException] should be thrownBy new Grid(1)
   }

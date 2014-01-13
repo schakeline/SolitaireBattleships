@@ -12,8 +12,8 @@ object SolitaireBattleship {
     val controller = new GameController
 
     //start GUI
-    //val g = new GUIFactory(controller)
-    //g.start
+    val g = new GUIFactory(controller)
+    g.start
     
     // start TUI
     val tui = new TUI(controller)

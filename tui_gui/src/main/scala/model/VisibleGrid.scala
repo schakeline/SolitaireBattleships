@@ -1,9 +1,9 @@
 package de.htwg.scala.solitairebattleship.model
 
 case class VisibleGrid( 
-		private val gridArray:List[List[Option[Ship]]], 
-		private val rowSums:List[Int], 
-		private val columnSums:List[Int]) extends IGrid {
+  private val gridArray:List[List[Option[Ship]]], 
+  private val rowSums:List[Int], 
+  private val columnSums:List[Int]) extends IGrid {
   
   def size = gridArray.size
   

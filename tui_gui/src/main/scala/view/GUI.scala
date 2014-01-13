@@ -26,10 +26,10 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
 
   reactions += {
     case ButtonClicked(ButtonNewGame) => {
-      val s:Int = SizeSelection.selection.item.toInt 
+      val s:Int = SizeSelection.selection.item.toInt
       state.text = "new game"
       controller.newGame(s)
-      GUIPlaceShip.reset      		
+      GUIPlaceShip.reset 
     }
     case ButtonClicked(ButtonShowSolution) => {
       Model.game match {
@@ -44,7 +44,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
   def update:Unit = {
       Model.game match {
         case Some(game) => contents =controlPanel(Some(game.gameGrid))
-        case _ 			=> None
+        case _          => None
       }
   }
   
@@ -63,63 +63,60 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
   def showSolution {
     state.text = "Solution"
     Model.game match {
-      case Some(game) 	=> contents = controlPanel(Some(game.solution))
-      case _ 			=> None
+      case Some(game) => contents = controlPanel(Some(game.solution))
+      case _          => None
     }
-     	  
   }
   
   def gridField(optionGrid:Option[IGrid]):GridPanel = {  
     
     optionGrid match {
       case Some(grid) => {   
-    	val s:Int = grid.size
-    
-    	var gPanel = new GridPanel(s + 2,s +2){
+        val s:Int = grid.size
+        var gPanel = new GridPanel(s + 2,s + 2){
           preferredSize = new Dimension(600,600)
       
           for (x <- 0 to s + 1; y <- 0 to s + 1){
             if (x == 0 && y == 0){ contents += emptyField }
             else if (x == 0 && y == s + 1) {contents += emptyField}
             else if (y == 0 && x == s + 1) {contents += emptyField}
-            else if (x== s+1  && y == s+1) {contents += emptyField}
-            else if (y == s + 1) {contents += rowSumField(x -1)}
-            else if (x == s + 1) {contents += clmSumField(y -1)}
-            else if (x == 0) contents += lineLabel((y - 1))
-            else if (y == 0) contents += lineLabel((x - 1))
-            else { 	contents += cell(y-1,x-1, grid) 	} 
+            else if (x == s + 1  && y == s + 1) {contents += emptyField}
+            else if (y == s + 1) {contents += rowSumField(x - 1)}
+            else if (x == s + 1) {contents += clmSumField(y - 1)}
+            else if (x == 0) {contents += lineLabel((y - 1))}
+            else if (y == 0) {contents += lineLabel((x - 1))}
+            else { contents += cell(y - 1,x - 1, grid)} 
           }
         }
-    	gPanel
+        gPanel
       }
       case _ => new GridPanel(1,1)
     }
   }//update
   
   def buttonBar():GridPanel = {
-   new swing.GridPanel(1,3){	
+    new swing.GridPanel(1,3){
      contents += SizeSelection
-   	 contents += ButtonNewGame
-   	 contents += ButtonShowSolution
-   }
+     contents += ButtonNewGame
+     contents += ButtonShowSolution
+    }
   }
   
   def controlPanel(optionGrid:Option[IGrid]):BorderPanel = {
-  	new swing.BorderPanel{
-   	  add(buttonBar ,swing.BorderPanel.Position.North)
-   	  add(state, BorderPanel.Position.South)
-   	  add(gridField(optionGrid), BorderPanel.Position.Center)
-      add(shipPanel,BorderPanel.Position.West)  
-
+    new swing.BorderPanel{
+      add(buttonBar ,swing.BorderPanel.Position.North)
+      add(state, BorderPanel.Position.South)
+      add(gridField(optionGrid), BorderPanel.Position.Center)
+      add(shipPanel,BorderPanel.Position.West)
     }   
   }
   
   def shipPanel:GridPanel = {
     Model.game match {
       case Some(game) =>{
-    	  				val ships = game.getUnplacedShips
-    			  		new ShipSelectionPanel(ships,this)
-    	  				}
+        val ships = game.getUnplacedShips
+        new ShipSelectionPanel(ships,this)
+      }
       case _ => new GridPanel(1,1)
     }
   }
@@ -134,10 +131,10 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
           horizontalAlignment = Alignment.Center
           verticalAlignment = Alignment.Center
           if (game.getUnplacedShips.isEmpty){
-            if (game.validateColumnSum(column)) foreground = java.awt.Color.GREEN
-            else foreground = java.awt.Color.RED
+            if (game.validateColumnSum(column)) {foreground = java.awt.Color.GREEN}
+            else {foreground = java.awt.Color.RED}
           }
-    	}
+        }
       }
       case _ => new Label("")
     }
@@ -150,11 +147,11 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
           horizontalAlignment = Alignment.Center
           verticalAlignment = Alignment.Center
           if (game.getUnplacedShips.isEmpty){
-            if (game.validateRowSum(row)) foreground = java.awt.Color.GREEN
-            else foreground = java.awt.Color.RED
+            if (game.validateRowSum(row)) {foreground = java.awt.Color.GREEN}
+            else {foreground = java.awt.Color.RED}
           }
-    	}
-       }
+        }
+      }
       case _ => new Label("")
     }
   }
@@ -168,10 +165,10 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
   }
   
   private def lineLabel(s:Int) = { 
-    new Label((s+65).toChar + "")
+    new Label((s+ 65).toChar + "")
   }
   
-  def selectShip(id:Int) = {
+  def selectShip(id:Int):Unit = {
     GUIPlaceShip.selectShip(id)
     state.text = "ship selected: " + id
   }

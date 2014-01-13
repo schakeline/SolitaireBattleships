@@ -50,7 +50,7 @@ class GameSpec extends FlatSpec with Matchers {
     val newGame = new Game(ships,solution)
     
     newGame.isValid should be(false)
-    
+
     newGame.placeShip(ships(0), 3, 3, Orientation.Horizontal)
     newGame.placeShip(ships(1), 0, 0, Orientation.Horizontal)
     

@@ -6,13 +6,13 @@ import de.htwg.scala.solitairebattleship.util.Observer
 
 
 class ModelSpec extends FlatSpec with Matchers {
-	"The Model " should "notifiy the observers" in {
-	  val obs = new ObserverMock()
-	  Model.add(obs)
-	  Model.game_=(null)
-	  
-	  obs.i should be(1)
-	}
+    "The Model " should "notifiy the observers" in {
+      val obs = new ObserverMock()
+      Model.add(obs)
+      Model.game_=(null)
+      
+      obs.i should be(1)
+    }
 
 }
 

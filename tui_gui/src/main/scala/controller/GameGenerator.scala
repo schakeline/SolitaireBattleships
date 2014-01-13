@@ -20,10 +20,10 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
   def generateGrid():Grid = 
   {
     placeShips(shipIDs, grid, allShips)
-    return solutions(0)
+    solutions(0)
   }
   
-  def printGrid(theGrid:Grid) = {
+  /*def printGrid(theGrid:Grid):Unit = {
     for( x <- 0 until theGrid.size){
       for(y <- 0 until theGrid.size){
         print(theGrid.getCell(y, x) + "|")
@@ -31,7 +31,7 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
       print("\n ------------------------------ \n")
     }
       
-  }
+  }*/
   
   
   def placeShips(shipIDs:List[Int], grid:Grid, ships:List[Ship]):Unit ={
@@ -57,12 +57,10 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
         positions = positions.filter(p => p != tmpPos)
       
         //iterate over all positions
-        var pos:Position = null;
-        if (tmpPos._3 == 0)
-          pos = new Position(tmpPos._1,tmpPos._2,Horizontal)
-        else pos = new Position(tmpPos._1,tmpPos._2,Vertical)
+        var pos:Position = new Position(tmpPos._1,tmpPos._2,Vertical)
+        if (tmpPos._3 == 0){pos = new Position(tmpPos._1,tmpPos._2,Horizontal)}
                    
-        if (CellsAreEmpty(pos,theShip,tmpGrid)){       
+        if (cellsAreEmpty(pos,theShip,tmpGrid)){       
           var tmpIDs:List[Int] = Nil        
             
           //println("x: " + pos.x + "y: " + pos.y+ pos.orientation+ " ship: "+ theShip.id)
@@ -98,9 +96,8 @@ class GameGenerator (val allShips:List[Ship],val gameSize:Int){
     positions
   }
   
-  private def CellsAreEmpty(position:Position, ship:Ship, grid:Grid):Boolean = {        
+  private def cellsAreEmpty(position:Position, ship:Ship, grid:Grid):Boolean = {        
     val fields = grid.getUsedCells(ship,position.x,position.y,position.orientation)
     grid.cellsFree(fields)
-  }
- 
+  } 
 }
