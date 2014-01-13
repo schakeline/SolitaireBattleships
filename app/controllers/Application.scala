@@ -8,6 +8,7 @@ import de.htwg.scala.solitairebattleship.controller.GameController
 import de.htwg.scala.solitairebattleship.util.Orientation
 import de.htwg.scala.solitairebattleship.model.Model
 import de.htwg.scala.solitairebattleship.model.IGame
+import de.htwg.scala.solitairebattleship.model.IGrid
 import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
 import de.htwg.scala.solitairebattleship.util.Observer
 import de.htwg.scala.solitairebattleship.view.IView
@@ -21,13 +22,12 @@ case class PlaceShipData(id: Int, x: String, y:String, orientation:String)
 object Application extends Controller with Observer with IView {
 
   val gameController = new GameController
-  /*
-  val tui = new TUIFactory(gameController)
-  tui.start
   
   val gui = new GUIFactory(gameController)
   gui.start
-  */
+
+  val tui = new TUIFactory(gameController)
+  tui.start
   
   Model.add(this) // listen to model
   
@@ -54,6 +54,7 @@ object Application extends Controller with Observer with IView {
   var showValidation:Boolean = false
   var gameFinish:Boolean = false
   var errorMsg:Option[String] = None
+  var solutionGrid:Option[IGrid] = None
 
 
   def index = Action {
@@ -74,7 +75,17 @@ object Application extends Controller with Observer with IView {
   def playGame = Action {
     var tmpErrorMsg = errorMsg
     errorMsg = None // reset global errorMsg
-    Ok( views.html.playGame(Model.game.get, placeShipForm, removeShipForm, tmpErrorMsg, showValidation) )
+    
+    solutionGrid match {
+      case Some(s) => Redirect("/solution")
+      case _ =>
+        try {
+         Ok( views.html.playGame(Model.game.get, placeShipForm, removeShipForm, tmpErrorMsg, showValidation) )
+        }
+        catch {
+          case e:Exception => Redirect("/")
+        }
+    }
   }
 
   def placeShip = Action {
@@ -134,19 +145,29 @@ object Application extends Controller with Observer with IView {
   }
 
   // Observer methods
-  def update {
-    //model = Model.game.get
-    showValidation = false
-  }
+  def update { showValidation = false }
 
 
   // IView methods
   def solution = Action {
-    Ok(views.html.showSolution(Model.game.get.solution))
+    // Do just call controller if showSolution was selected on this view
+    if (solutionGrid == None) {
+      gameController.showSolution  
+    }
+
+    val tmpSolution = solutionGrid.get
+    solutionGrid = None // reset global show solution
+    
+    try {
+      Ok( views.html.showSolution(tmpSolution) )
+    }
+    catch {
+      case e:Exception => Redirect("/")
+    }
   }
 
   def showSolution {
-
+    solutionGrid = Some(Model.game.get.solution)
   }
 
   def showValidationResult {

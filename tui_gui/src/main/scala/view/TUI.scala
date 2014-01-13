@@ -54,7 +54,7 @@ class TUI(val controller:GameController) extends Observer with IView {
    */
   private def printGrid(g:IGrid, showValidation:Boolean = false) {
     
-    var gridStr = "  " + fieldIndexRow(g.size) + "\n"
+    var gridStr = "\n  " + fieldIndexRow(g.size) + "\n"
     gridStr += gridRows(g, showValidation)
     gridStr += "  " + columnSumRow(g, showValidation)
     
