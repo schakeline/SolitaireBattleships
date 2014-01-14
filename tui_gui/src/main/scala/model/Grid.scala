@@ -55,7 +55,6 @@ class Grid (val size:Int) extends IGrid {
         case Some(ship) => {isFree = false}
         case _ => {}
       }
-      //println("x:" +f._1 + " y:"+f._2 + "isFree: " + isFree + gridArray(f._2)(f._1))
     }
     isFree
   }

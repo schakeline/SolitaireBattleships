@@ -37,7 +37,7 @@ class GUI(controller:GameController) extends swing.Frame with Observer with IVie
         case _ => {}
       }
     }
-    case ButtonClicked(_) => { println("clicked any button but not a special button?")}
+    case ButtonClicked(_) => {}
   }   
     
   

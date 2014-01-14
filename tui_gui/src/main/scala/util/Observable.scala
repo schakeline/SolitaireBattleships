@@ -3,7 +3,7 @@ package de.htwg.scala.solitairebattleship.util
 trait Observer {
   def update
 }
-class Observable {
+trait Observable {
   private var subscribers:Vector[Observer] = Vector()
   def add(s:Observer) = subscribers=subscribers:+s
   def remove(s:Observer) = subscribers=subscribers.filterNot(o=>o==s)

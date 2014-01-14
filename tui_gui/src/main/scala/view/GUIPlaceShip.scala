@@ -49,16 +49,16 @@ object GUIPlaceShip {
         return "diagonal  Placement is not possible"
       }
       
-      try{
-          println("ship" + theShip.id + "2. click x: " + x + " y: " + y)
+      try {
           controller.placeShip(theShip.id, start._1, start._2, or)
-        }catch {
-          case e: ShipCollisionException => {
-            reset
-            return "Collision"
-          }
-          case e:Exception => return"exception caught: " + e;
+      }
+      catch {
+        case e: ShipCollisionException => {
+          reset
+          return "Collision"
         }
+        case e:Exception => return"exception caught: " + e;
+      }
       reset
       return "2. click x: " + x + " y: " + y
     }
