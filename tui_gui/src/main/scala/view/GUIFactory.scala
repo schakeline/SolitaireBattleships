@@ -4,7 +4,7 @@ package de.htwg.scala.solitairebattleship.view
 import scala.actors.Actor
 import de.htwg.scala.solitairebattleship.controller.GameController
 
-class GUIFactory(controller:GameController) extends Actor{
+class GUIFactory(controller: GameController) extends Actor {
 
   def act() = {
     val gui = new GUI(controller)

@@ -58,7 +58,10 @@ object Application extends Controller with Observer with IView {
 
 
   def index = Action {
-    Ok(views.html.index(newGameForm, possibleGridSizes))
+    Model.game match {
+      case Some(s) => Redirect("/playGame")
+      case _ => Ok(views.html.index(newGameForm, possibleGridSizes))
+    }
   }
 
   def newGame = Action { implicit request =>

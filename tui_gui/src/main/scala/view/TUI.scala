@@ -7,16 +7,15 @@ import de.htwg.scala.solitairebattleship.util.Orientation._
 import java.lang.NumberFormatException
 import de.htwg.scala.solitairebattleship.model.exception.ShipCollisionException
 
-class TUI(val controller:GameController) extends Observer with IView {
+class TUI(val controller: GameController) extends Observer with IView {
 
   private val askForGridSize = "Please enter: n <size [3, 10]> [new game], q [quit]."
   private val inputCommands = "Enter q [quit], n <size [3,10]> [new game], s [show solution], mv <id> <y> <x> <orientation> [move ship], rm <id> [remove ship]"
-  
+
   Model.add(this) // listen to model
   controller.registerView(this) // register view
   printTitle
   update
-  
 
   def showGameFinished {
     printGrid(Model.game.get.gameGrid, true)
@@ -34,13 +33,13 @@ class TUI(val controller:GameController) extends Observer with IView {
   }
 
   def update {
-    Model.game match { 
+    Model.game match {
       case Some(game) => {
         printGrid(game.gameGrid)
         printUnplacedShips
         printInfo(inputCommands)
-      } 
-      case _ => {printInfo(askForGridSize)}
+      }
+      case _ => { printInfo(askForGridSize) }
     }
   }
 
@@ -52,75 +51,74 @@ class TUI(val controller:GameController) extends Observer with IView {
     D|~|~|0|~|1
       1 0 3 0 
    */
-  private def printGrid(g:IGrid, showValidation:Boolean = false) {
-    
+  private def printGrid(g: IGrid, showValidation: Boolean = false) {
+
     var gridStr = "\n  " + fieldIndexRow(g.size) + "\n"
     gridStr += gridRows(g, showValidation)
     gridStr += "  " + columnSumRow(g, showValidation)
-    
+
     println(gridStr)
   }
 
-  private def fieldIndexRow(gridSize:Int) = {
+  private def fieldIndexRow(gridSize: Int) = {
     var labels = ""
     for (x <- 0 until gridSize) {
-      labels += ((x+65).toChar + " ")
+      labels += ((x + 65).toChar + " ")
     }
     labels
   }
 
-  private def gridRows(g:IGrid, showValidation:Boolean) = {
-    
-    var collisions:List[Tuple2[Int,Int]] = Nil
+  private def gridRows(g: IGrid, showValidation: Boolean) = {
+
+    var collisions: List[Tuple2[Int, Int]] = Nil
     if (showValidation) collisions = Model.game.get.getCollisions
 
     var rows = ""
     var size = g.size
     for (y <- 0 until size) {
-      for (x <- 0 until size+2) {
-        var field:String =
+      for (x <- 0 until size + 2) {
+        var field: String =
           x match {
-          case 0 => ((y+65).toChar + "|")
-          case x if (x == size+1) => getColoredRowSum(y, g.getRowSum(y), showValidation) + "\n"
-          case _ => {
-            g.getCell(x-1,y) match{
-              case Some(s) => {
-                if(collisions.contains(x-1,y)){
-                  colorRed(s.id.toString) + "|" }
-                else s.id + "|"}
-              case _ => { "~|"}
+            case 0 => ((y + 65).toChar + "|")
+            case x if (x == size + 1) => getColoredRowSum(y, g.getRowSum(y), showValidation) + "\n"
+            case _ => {
+              g.getCell(x - 1, y) match {
+                case Some(s) => {
+                  if (collisions.contains(x - 1, y)) {
+                    colorRed(s.id.toString) + "|"
+                  } else s.id + "|"
+                }
+                case _ => { "~|" }
+              }
+
             }
-            
           }
-        }
         rows += field
       }
     }
     rows
   }
 
-  private def columnSumRow(g:IGrid, showValidation:Boolean) = {
+  private def columnSumRow(g: IGrid, showValidation: Boolean) = {
     var sums = ""
     for (x <- 0 until Model.game.get.gameGrid.size) {
       sums += (getColoredColumnSum(x, g.getColumnSum(x), showValidation) + " ")
     }
     sums
   }
-  
-  private def getColoredRowSum(row:Int, sum:Int, showValidation:Boolean) = {
+
+  private def getColoredRowSum(row: Int, sum: Int, showValidation: Boolean) = {
     if (showValidation) {
       if (Model.game.get.validateRowSum(row)) colorGreen(sum.toString)
       else colorRed(sum.toString)
-    }
-    else sum.toString
+    } else sum.toString
   }
 
-  private def getColoredColumnSum(col:Int, sum:Int, showValidation:Boolean) = {
+  private def getColoredColumnSum(col: Int, sum: Int, showValidation: Boolean) = {
     if (showValidation) {
       if (Model.game.get.validateColumnSum(col)) colorGreen(sum.toString)
       else colorRed(sum.toString)
-    }
-    else sum.toString
+    } else sum.toString
   }
 
   /*
@@ -132,14 +130,13 @@ class TUI(val controller:GameController) extends Observer with IView {
   */
   private def printUnplacedShips {
     var output = "## Unplaced ships"
-    var ships:List[Ship] = Model.game.get.getUnplacedShips
+    var ships: List[Ship] = Model.game.get.getUnplacedShips
     var tmpSize = 0
     for (s <- ships) {
-      if (tmpSize != s.size){ 
+      if (tmpSize != s.size) {
         output += "\n### with size " + s.size + ": "
         tmpSize = s.size
-      }
-      else {
+      } else {
         output += "|"
       }
       output += s.toString
@@ -147,69 +144,63 @@ class TUI(val controller:GameController) extends Observer with IView {
     println(output)
   }
 
-  
-
-  def processUserInput(in:String) = {
+  def processUserInput(in: String) = {
     var continue = true
 
     var input = in.toUpperCase
 
     try {
       input match {
-      case "Q" => continue = false
-      case "S" => controller.showSolution
-      case x if (x.matches("N [0-9]{1,2}")) => {
-        controller.newGame(x.slice(2,x.length).toInt)
-      }
-      case _ => {
-        Model.game match {
-          case Some(game) => {
-          input.toList.filter(c => c != ' ') match {
-          case 'M' :: 'V' :: ship :: column :: row :: orientation :: Nil => {
-            controller.placeShip( (ship.toInt - '0'.toInt),
-              (row.toInt - 'A'.toInt),
-              (column.toInt - 'A'.toInt),
-              (if (orientation=='H') Horizontal else Vertical) )
+        case "Q" => continue = false
+        case "S" => controller.showSolution
+        case x if (x.matches("N [0-9]{1,2}")) => controller.newGame(x.slice(2, x.length).toInt)
+        case _ => {
+          Model.game match {
+            case Some(game) => {
+              input.toList.filter(c => c != ' ') match {
+                case 'M' :: 'V' :: ship :: column :: row :: orientation :: Nil => {
+                  controller.placeShip((ship.toInt - '0'.toInt),
+                    (row.toInt - 'A'.toInt),
+                    (column.toInt - 'A'.toInt),
+                    (if (orientation == 'H') Horizontal else Vertical))
+                }
+                case 'R' :: 'M' :: ship :: Nil => {
+                  controller.removeShip(ship.toInt - '0'.toInt)
+                }
+                case _ => printError("Wrong Input!")
+              }
+            } case _ => {
+              printError(askForGridSize)
+            }
           }
-          case 'R' :: 'M' :: ship :: Nil => {
-            controller.removeShip(ship.toInt - '0'.toInt)
-          }
-          case _ => printError("Wrong Input!")
-          }
-        } case _ => {
-        printError(askForGridSize)
         }
       }
-      }
-      }
-    }
-    catch {
-      case e:IllegalArgumentException =>
+    } catch {
+      case e: IllegalArgumentException =>
         printError("Illegal argument")
-      case e:IndexOutOfBoundsException =>
+      case e: IndexOutOfBoundsException =>
         printError("Index out of bounds.")
-      case e:ShipCollisionException =>
+      case e: ShipCollisionException =>
         printError("ShipCollition: " + e.getMessage)
     }
 
     continue
   }
 
-
-  private def printError(msg:String) { println(colorRed("[ERROR] ") + msg) }
-  private def printInfo(msg:String) { println(colorBlue("[INFO] ") + msg) }
+  private def printError(msg: String) { println(colorRed("[ERROR] ") + msg) }
+  private def printInfo(msg: String) { println(colorBlue("[INFO] ") + msg) }
 
   private def printTitle {
-    scala.io.Source.fromURL(getClass.getResource("/title.txt")).getLines.foreach(s => println(colorYellow(s)))    
+    scala.io.Source.fromURL(getClass.getResource("/title.txt")).getLines.foreach(s => println(colorYellow(s)))
   }
 
   private def printGratualtion {
-    scala.io.Source.fromURL(getClass.getResource("/gratulation.txt")).getLines.foreach(s => println(colorGreen(s)))    
+    scala.io.Source.fromURL(getClass.getResource("/gratulation.txt")).getLines.foreach(s => println(colorGreen(s)))
   }
 
-  private def colorRed(s:String) = {Console.RED + s + Console.RESET}
-  private def colorGreen(s:String) = {Console.GREEN + s + Console.RESET}
-  private def colorYellow(s:String) = {Console.YELLOW + s + Console.RESET}
-  private def colorBlue(s:String) = {Console.BLUE + s + Console.RESET}
+  private def colorRed(s: String) = { Console.RED + s + Console.RESET }
+  private def colorGreen(s: String) = { Console.GREEN + s + Console.RESET }
+  private def colorYellow(s: String) = { Console.YELLOW + s + Console.RESET }
+  private def colorBlue(s: String) = { Console.BLUE + s + Console.RESET }
 
 }
