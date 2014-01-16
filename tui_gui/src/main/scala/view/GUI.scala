@@ -19,7 +19,7 @@ class GUI(controller: GameController) extends swing.Frame with Observer with IVi
   val state = new Label("")
 
   resizable = false
-  contents = controlPanel(None)
+  contents = controlPanel(None, false)
 
   listenTo(ButtonNewGame)
   listenTo(ButtonShowSolution)
@@ -42,7 +42,7 @@ class GUI(controller: GameController) extends swing.Frame with Observer with IVi
 
   def update: Unit = {
     Model.game match {
-      case Some(game) => contents = controlPanel(Some(game.gameGrid))
+      case Some(game) => contents = controlPanel(Some(game.gameGrid), false)
       case _ => None
     }
   }
@@ -62,12 +62,12 @@ class GUI(controller: GameController) extends swing.Frame with Observer with IVi
   def showSolution {
     state.text = "Solution"
     Model.game match {
-      case Some(game) => contents = controlPanel(Some(game.solution))
+      case Some(game) => contents = controlPanel(Some(game.solution), true)
       case _ => None
     }
   }
 
-  def gridField(optionGrid: Option[IGrid]): GridPanel = {
+  def gridField(optionGrid: Option[IGrid], isSolution:Boolean): GridPanel = {
 
     optionGrid match {
       case Some(grid) => {
@@ -80,8 +80,8 @@ class GUI(controller: GameController) extends swing.Frame with Observer with IVi
             else if (x == 0 && y == s + 1) { contents += emptyField }
             else if (y == 0 && x == s + 1) { contents += emptyField }
             else if (x == s + 1 && y == s + 1) { contents += emptyField }
-            else if (y == s + 1) { contents += rowSumField(x - 1) }
-            else if (x == s + 1) { contents += clmSumField(y - 1) }
+            else if (y == s + 1) { contents += rowSumField(x - 1, isSolution) }
+            else if (x == s + 1) { contents += clmSumField(y - 1, isSolution) }
             else if (x == 0) { contents += lineLabel((y - 1)) }
             else if (y == 0) { contents += lineLabel((x - 1)) }
             else { contents += cell(y - 1, x - 1, grid) }
@@ -101,11 +101,11 @@ class GUI(controller: GameController) extends swing.Frame with Observer with IVi
     }
   }
 
-  def controlPanel(optionGrid: Option[IGrid]): BorderPanel = {
+  def controlPanel(optionGrid: Option[IGrid], isSolution:Boolean): BorderPanel = {
     new swing.BorderPanel {
       add(buttonBar, swing.BorderPanel.Position.North)
       add(state, BorderPanel.Position.South)
-      add(gridField(optionGrid), BorderPanel.Position.Center)
+      add(gridField(optionGrid, isSolution), BorderPanel.Position.Center)
       add(shipPanel, BorderPanel.Position.West)
     }
   }
@@ -122,13 +122,13 @@ class GUI(controller: GameController) extends swing.Frame with Observer with IVi
 
   private def emptyField = { new Label() { background = java.awt.Color.WHITE } }
 
-  private def clmSumField(column: Int) = {
+  private def clmSumField(column: Int, isSolution:Boolean) = {
     Model.game match {
       case Some(game) => {
         new Label(game.solution.getColumnSum(column).toString) {
           horizontalAlignment = Alignment.Center
           verticalAlignment = Alignment.Center
-          if (game.getUnplacedShips.isEmpty) {
+          if (!isSolution && game.getUnplacedShips.isEmpty) {
             if (game.validateColumnSum(column)) { foreground = java.awt.Color.GREEN }
             else { foreground = java.awt.Color.RED }
           }
@@ -138,13 +138,13 @@ class GUI(controller: GameController) extends swing.Frame with Observer with IVi
     }
   }
 
-  private def rowSumField(row: Int) = {
+  private def rowSumField(row: Int, isSolution:Boolean) = {
     Model.game match {
       case Some(game) => {
         new Label(game.solution.getRowSum(row).toString) {
           horizontalAlignment = Alignment.Center
           verticalAlignment = Alignment.Center
-          if (game.getUnplacedShips.isEmpty) {
+          if (!isSolution && game.getUnplacedShips.isEmpty) {
             if (game.validateRowSum(row)) { foreground = java.awt.Color.GREEN }
             else { foreground = java.awt.Color.RED }
           }

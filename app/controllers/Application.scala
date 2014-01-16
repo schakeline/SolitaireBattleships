@@ -24,10 +24,10 @@ object Application extends Controller with Observer with IView {
   
   val gui = new GUIFactory(gameController)
   gui.start
-
+  /*
   val tui = new TUIFactory(gameController)
   tui.start
-  
+  */
   Model.add(this) // listen to model  
   gameController.registerView(this)
 
@@ -52,10 +52,17 @@ object Application extends Controller with Observer with IView {
 
 
   def index = Action {
+    //Ok(views.html.index(newGameForm, possibleGridSizes))
+    
     Model.game match {
       case Some(s) => Redirect("/playGame")
       case _ => Ok(views.html.index(newGameForm, possibleGridSizes))
     }
+  }
+
+  def newGameSelection = Action {
+    gameController.resetModel
+    Redirect("/")
   }
 
   def newGame = Action { implicit request =>
@@ -151,14 +158,19 @@ object Application extends Controller with Observer with IView {
       gameController.showSolution  
     }
 
-    try {
-      val tmpSolution = solutionGrid.get
-      solutionGrid = None // reset global show solution
     
-      Ok( views.html.showSolution(tmpSolution) )
+    val tmpSolution:Option[IGrid] = solutionGrid match {
+      case Some(s) => Some(s)
+      case _ => None
+    }
+      //val tmpSolution = solutionGrid.get
+      solutionGrid = None // reset global show solution
+    try {
+      Ok( views.html.showSolution(tmpSolution.get) )
     }
     catch {
-      case e:Exception => Redirect("/")
+      case e:Exception => 
+        Redirect("/newGameSelection")
     }
   }
 

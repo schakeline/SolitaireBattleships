@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /newGameSelection           controllers.Application.newGameSelection
 
 # Tasks
 GET     /playGame                   controllers.Application.playGame

@@ -17,4 +17,6 @@ object Model extends Observable {
   private def model_=(model:IGame) {_model = model}
   def model = _model
   */
+
+  def reset {game = None}
 }

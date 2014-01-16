@@ -46,4 +46,6 @@ class GameController {
     Model.game = None
   }
 
+  def resetModel {Model.reset}
+
 }
