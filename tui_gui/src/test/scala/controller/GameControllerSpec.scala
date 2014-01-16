@@ -15,6 +15,9 @@ class GameControllerSpec extends FlatSpec with Matchers {
 
     var g = cont.newGame(5)
     g.!==(null) should be(true)
+        
+    an[IllegalArgumentException] should be thrownBy cont.newGame(2)
+    an[IllegalArgumentException] should be thrownBy cont.newGame(11)
   }
 
   "place a Ship" should "update the Views" in {
@@ -23,11 +26,20 @@ class GameControllerSpec extends FlatSpec with Matchers {
     controller.registerView(view)
     controller.newGame(3)
 
-    controller.placeShip(0, 1, 1, Orientation.Horizontal)
-
+    controller.placeShip(0, 0, 0, Orientation.Horizontal)
+    
     view.finished should be(0)
     view.validation should be(0)
     view.solution should be(0)
+
+    controller.showSolution
+    view.solution should be(1)
+    
+    
+    an [NoSuchElementException] should be thrownBy controller.placeShip(3, 1, 1, Orientation.Horizontal)
+
+    controller.unregisterView(view);
+    
 
     controller.showSolution
     view.solution should be(1)
