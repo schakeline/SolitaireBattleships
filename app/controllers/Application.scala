@@ -16,7 +16,6 @@ import de.htwg.scala.solitairebattleship.view.GUIFactory
 import de.htwg.scala.solitairebattleship.view.TUIFactory
 
 
-
 case class PlaceShipData(id: Int, x: String, y:String, orientation:String)
 
 object Application extends Controller with Observer with IView {
@@ -29,13 +28,10 @@ object Application extends Controller with Observer with IView {
   val tui = new TUIFactory(gameController)
   tui.start
   
-  Model.add(this) // listen to model
-  
+  Model.add(this) // listen to model  
   gameController.registerView(this)
 
-
   val newGameForm = Form( "size" -> number(min=3, max=10) )
-  
   val placeShipForm = Form( 
     mapping(
       "id" -> number(min=0),
@@ -45,9 +41,7 @@ object Application extends Controller with Observer with IView {
     (PlaceShipData.apply)
     (PlaceShipData.unapply)
   )
-
   val removeShipForm = Form( "id" -> number(min=0) )
-
   val possibleGridSizes = (3 to 10).map(i =>i.toString).toList
 
   //var model:IGame = Model.game.get
@@ -101,8 +95,7 @@ object Application extends Controller with Observer with IView {
           val orientation = if(placeShipData.orientation == "Horizontal") Orientation.Horizontal else Orientation.Vertical
           val x:Int = placeShipData.x(0).toInt-65
           val y:Int = placeShipData.y(0).toInt-65
-          
-          
+
           try {
             gameController.placeShip(placeShipData.id, x, y, orientation)
           }
@@ -158,10 +151,10 @@ object Application extends Controller with Observer with IView {
       gameController.showSolution  
     }
 
-    val tmpSolution = solutionGrid.get
-    solutionGrid = None // reset global show solution
-    
     try {
+      val tmpSolution = solutionGrid.get
+      solutionGrid = None // reset global show solution
+    
       Ok( views.html.showSolution(tmpSolution) )
     }
     catch {
@@ -172,11 +165,10 @@ object Application extends Controller with Observer with IView {
   def showSolution {
     solutionGrid = Some(Model.game.get.solution)
   }
-
   def showValidationResult {
     showValidation = true
   }
-
+  
   def showGameFinished {
     gameFinish = true
   }

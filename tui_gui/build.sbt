@@ -1,4 +1,4 @@
-import de.johoop.jacoco4sbt.JacocoPlugin._
+//import de.johoop.jacoco4sbt.JacocoPlugin._
 
 name := "SolitaireBattleships"
 
@@ -24,4 +24,4 @@ libraryDependencies ++= Seq(
 
 //org.scalastyle.sbt.ScalastylePlugin.Settings
 
-jacoco.settings
+//jacoco.settings
