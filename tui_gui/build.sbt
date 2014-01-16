@@ -1,3 +1,5 @@
+import de.johoop.jacoco4sbt.JacocoPlugin._
+
 name := "SolitaireBattleships"
 
 version := "0.0.0"
@@ -21,3 +23,5 @@ libraryDependencies ++= Seq(
 )
 
 //org.scalastyle.sbt.ScalastylePlugin.Settings
+
+jacoco.settings
